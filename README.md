@@ -4,6 +4,8 @@
 > Built for ETA searchers and lower-middle-market PE operators who need to know *which* companies are ready to be acquired — not just which ones exist.
 
 ---
+> 🔗 **[Try ARS Engine →](https://aquamarine-valkyrie-50a6ed.netlify.app)**
+> 📹 **[2-Minute Video Walkthrough →](https://loom.com/your-link)**
 
 ## What It Does
 

@@ -1100,14 +1100,7 @@ select.form-control{appearance:none;cursor:pointer}
       </div>
     </div>
 
-    <!-- TEAM -->
-    <div class="section-header text-center"><div class="section-eyebrow" style="justify-content:center"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">The Team</div></div><h2 class="section-title">Built by people who've sourced deals</h2></div>
-    <div class="about-team-grid">
-      <div class="about-team-card"><div class="about-team-av" style="background:var(--amber-l);color:var(--amber-d)">AR</div><div class="about-team-name">Alex Rodriguez</div><div class="about-team-role">CEO · Former ETA Searcher</div></div>
-      <div class="about-team-card"><div class="about-team-av" style="background:var(--teal-l);color:var(--teal)">JC</div><div class="about-team-name">Julia Chen</div><div class="about-team-role">CTO · Ex-Palantir Engineer</div></div>
-      <div class="about-team-card"><div class="about-team-av" style="background:var(--violet-l);color:var(--violet)">MP</div><div class="about-team-name">Marcus Park</div><div class="about-team-role">Head of Product · Ex-Apollo</div></div>
-      <div class="about-team-card"><div class="about-team-av" style="background:var(--rose-l);color:var(--rose)">SK</div><div class="about-team-name">Sara Kim</div><div class="about-team-role">Head of AI · PhD MIT</div></div>
-    </div>
+
   </div></section>
   <div id="about-footer-target"></div>
 </div>
@@ -1242,14 +1235,14 @@ select.form-control{appearance:none;cursor:pointer}
             <li><span class="demo-check">✓</span>Q&A on your specific deal sourcing workflow</li>
           </ul>
         </div>
-        <div style="background:rgba(255,255,255,.04);border:1px solid var(--wborder2);border-radius:var(--r3);padding:32px">
+        <div id="demo-form-section" style="background:rgba(255,255,255,.04);border:1px solid var(--wborder2);border-radius:var(--r3);padding:32px">
           <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:20px">Book your 15-minute demo</h3>
           <div class="form-group"><label style="color:rgba(255,255,255,.4)">Name</label><input class="form-control" type="text" placeholder="James Rutherford" style="background:rgba(255,255,255,.06);border-color:var(--wborder2);color:#fff"></div>
           <div class="form-group"><label style="color:rgba(255,255,255,.4)">Work Email</label><input class="form-control" type="email" placeholder="james@apexeta.com" style="background:rgba(255,255,255,.06);border-color:var(--wborder2);color:#fff"></div>
           <div class="form-group"><label style="color:rgba(255,255,255,.4)">Fund / Company</label><input class="form-control" type="text" placeholder="Apex ETA Fund" style="background:rgba(255,255,255,.06);border-color:var(--wborder2);color:#fff"></div>
           <div class="form-group"><label style="color:rgba(255,255,255,.4)">Team Size</label><select class="form-control" style="background:rgba(255,255,255,.06);border-color:var(--wborder2);color:#fff"><option>Just me</option><option>2-5 people</option><option>6-20 people</option><option>20+ people</option></select></div>
           <div class="form-group"><label style="color:rgba(255,255,255,.4)">Preferred Time (EST)</label><select class="form-control" style="background:rgba(255,255,255,.06);border-color:var(--wborder2);color:#fff"><option>Morning (9am-12pm)</option><option>Afternoon (1pm-5pm)</option><option>Flexible</option></select></div>
-          <button class="btn btn-amber" style="width:100%;justify-content:center;margin-top:8px" onclick="showToast('Demo requested! We\'ll email you a calendar link within 2 hours.','ok')">Request Demo &#8594;</button>
+          <button class="btn btn-amber" style="width:100%;justify-content:center;margin-top:8px" onclick="submitDemo(this)">Request Demo &#8594;</button>
           <p style="font-size:11px;color:rgba(255,255,255,.25);text-align:center;margin-top:12px">No commitment required. Cancel or reschedule anytime.</p>
         </div>
       </div>
@@ -1397,7 +1390,7 @@ select.form-control{appearance:none;cursor:pointer}
           <div class="ib-sb-label">API Config</div>
           <div class="ib-api-cfg">
             <label>Backend API URL</label>
-            <input type="text" id="api-url-input" placeholder="http://localhost:8000" value="http://localhost:8000" onchange="setApiUrl(this.value)">
+            <input type="text" id="api-url-input" placeholder="https://tahirammar-ars-engine.hf.space" value="https://tahirammar-ars-engine.hf.space" onchange="setApiUrl(this.value)">
             <div class="ib-api-cfg-status" id="api-cfg-status">● not connected</div>
           </div>
         </div>
@@ -1709,6 +1702,24 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ═══════════════════════════════════════
    TOAST
 ═══════════════════════════════════════ */
+function submitDemo(btn) {
+  const form = btn.closest('form') || btn.parentElement;
+  const inputs = form.querySelectorAll('input[type="text"], input[type="email"]');
+  let valid = true;
+  inputs.forEach(function(inp) {
+    inp.style.borderColor = '';
+    if (!inp.value.trim()) {
+      inp.style.borderColor = 'var(--rose)';
+      valid = false;
+    }
+  });
+  if (!valid) {
+    showToast('Please fill in all required fields.', 'error');
+    return;
+  }
+  showToast("Demo requested! We'll email you a calendar link within 2 hours.", 'ok');
+}
+
 function showToast(msg, type = '') {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -1720,11 +1731,16 @@ function showToast(msg, type = '') {
 /* ═══════════════════════════════════════
    API HEALTH CHECK
 ═══════════════════════════════════════ */
-let API_URL = localStorage.getItem('ars_api_url') || 'http://localhost:8000';
+let API_URL = localStorage.getItem('ars_api_url') || 'https://tahirammar-ars-engine.hf.space';
 function setApiUrl(url) {
   API_URL = url.replace(/\/$/, '');
   localStorage.setItem('ars_api_url', API_URL);
   checkHealth();
+  // Keep Hugging Face backend awake
+setInterval(() => {
+  fetch('https://YOUR-HF-SPACE-URL/health')
+    .catch(() => {}); // silent fail is fine
+}, 840000); // ping every 14 minutes
 }
 async function checkHealth() {
   const dot = document.getElementById('api-dot');
