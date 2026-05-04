@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="ars-subdir" content="true">
+<title>Plumbing Business Acquisitions — ARS Engine</title>
+<meta name="description" content="Score and acquire plumbing businesses with PE-grade intelligence. ARS Engine detects owner exit signals, financial health, and acquisition readiness for plumbing companies.">
+<meta name="keywords" content="plumbing acquisition, buy plumbing business, plumbing PE deal sourcing, plumbing exit signals, acquisition readiness plumbing">
+<link rel="stylesheet" href="../shared.css">
+<style>
+.industry-hero{background:var(--navy);padding:64px 40px;position:relative;overflow:hidden}
+.industry-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:50px 50px}
+.industry-hero::after{content:'';position:absolute;top:0;right:0;width:400px;height:100%;background:linear-gradient(135deg,transparent,rgba(10,138,114,0.04));pointer-events:none}
+.industry-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--wborder);border-radius:var(--r2);overflow:hidden;margin-top:40px}
+.industry-stat{padding:24px;border-right:1px solid var(--wborder);text-align:center}
+.industry-stat:last-child{border-right:none}
+.industry-stat-num{font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:800;color:var(--amber);line-height:1;margin-bottom:4px}
+.industry-stat-label{font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+
+.signal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.signal-card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:22px;box-shadow:var(--shadow)}
+.signal-card-icon{width:44px;height:44px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px;border:1px solid var(--border)}
+.signal-card-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.signal-card-desc{font-size:12px;color:var(--ink3);line-height:1.65;font-weight:300}
+
+.targets-table{border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;background:#fff}
+.targets-table table{width:100%;border-collapse:collapse}
+.targets-table thead{background:var(--navy)}
+.targets-table th{padding:12px 16px;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.45);text-align:left}
+.targets-table td{padding:14px 16px;font-size:12px;border-bottom:1px solid var(--border)}
+.targets-table tr:last-child td{border-bottom:none}
+.targets-table tbody tr:hover{background:var(--cream2)}
+.ars-score-pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800}
+.pill-S{background:var(--amber-l);color:var(--amber-d)}
+.pill-A{background:var(--teal-l);color:var(--teal)}
+.pill-B{background:var(--violet-l);color:var(--violet)}
+
+.industry-nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px}
+.industry-nav a{padding:7px 16px;border:1px solid var(--border2);border-radius:99px;font-size:12px;color:var(--ink3);transition:all .15s;font-family:'Barlow Condensed',sans-serif;font-weight:600}
+.industry-nav a:hover{border-color:var(--amber);color:var(--amber-d)}
+.industry-nav a.active{background:var(--amber);color:var(--navy);border-color:var(--amber)}
+</style>
+</head>
+<body>
+
+<div id="ars-header"></div>
+
+<div class="breadcrumb">
+  <a href="../index.html">Home</a>
+  <span class="breadcrumb-sep">/</span>
+  <a href="../index.html">Industries</a>
+  <span class="breadcrumb-sep">/</span>
+  <strong>Plumbing Acquisitions</strong>
+</div>
+
+<!-- Hero -->
+<div class="industry-hero">
+  <div style="max-width:1200px;margin:0 auto;position:relative;z-index:1">
+    <div class="section-eyebrow" style="margin-bottom:16px"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Industry Intelligence · Plumbing</div></div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:44px;font-weight:900;color:#fff;letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px">
+      Score plumbing businesses for<br><em style="font-style:italic;color:var(--amber)">acquisition readiness</em>
+    </h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.5);max-width:560px;line-height:1.8;font-weight:300;margin-bottom:28px">The US plumbing sector has 120,000+ owner-operated businesses. ARS Engine identifies which ones have aging founders, no succession plan, stable recurring service revenue — and are quietly ready to sell.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap">
+      <a href="../sandbox.html" class="btn btn-amber btn-lg">Score a Plumbing Business &#8594;</a>
+      <a href="../signup.html" class="btn btn-ghost-dark btn-lg">Start Free</a>
+    </div>
+    <div class="industry-stat-grid">
+      <div class="industry-stat"><div class="industry-stat-num">120K</div><div class="industry-stat-label">Plumbing businesses in US</div></div>
+      <div class="industry-stat"><div class="industry-stat-num">71%</div><div class="industry-stat-label">Owner-operated</div></div>
+      <div class="industry-stat"><div class="industry-stat-num">$980K</div><div class="industry-stat-label">Avg revenue (10-50 emp)</div></div>
+      <div class="industry-stat"><div class="industry-stat-num">3.9×</div><div class="industry-stat-label">Avg EBITDA multiple</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Industry Nav -->
+<div class="section-sm section-cream2">
+  <div class="section-inner">
+    <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);font-family:'JetBrains Mono',monospace;margin-bottom:12px">Browse by Industry</div>
+    <div class="industry-nav">
+      <a href="hvac.html">HVAC</a>
+      <a href="plumbing.html" class="active">&#10003; Plumbing</a>
+      <a href="landscaping.html">Landscaping</a>
+      <a href="roofing.html">Roofing</a>
+    </div>
+  </div>
+</div>
+
+<!-- Exit Signals -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">ARS Signal Detection</div></div>
+      <h2 class="section-title">Plumbing-specific acquisition signals ARS detects</h2>
+      <p class="section-sub">ARS Engine is trained on plumbing industry patterns — not generic business data. Each signal is weighted for acquisition probability in this vertical.</p>
+    </div>
+    <div class="signal-grid">
+      <div class="signal-card">
+        <div class="signal-card-icon" style="background:var(--rose-l)">👤</div>
+        <div class="signal-card-title">Aging Owner / Founder</div>
+        <div class="signal-card-desc">Detects founders 55+ based on LinkedIn profile age, founding year, and business tenure. Plumbing owners average 57 at exit — ARS flags them early before they list with a broker.</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-card-icon" style="background:var(--violet-l)">📋</div>
+        <div class="signal-card-title">Operations Manager Postings</div>
+        <div class="signal-card-desc">Job postings for Dispatch Manager, Service Coordinator, or Operations Lead are the clearest pre-exit signal in residential services. ARS monitors these in real time.</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-card-icon" style="background:var(--teal-l)">🔄</div>
+        <div class="signal-card-title">Recurring Service Contracts</div>
+        <div class="signal-card-desc">Plumbing businesses with active maintenance contracts, annual inspection agreements, or commercial retainer clients show predictable cash flow — a key driver of acquisition multiple.</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-card-icon" style="background:var(--amber-l)">🏆</div>
+        <div class="signal-card-title">Multi-Trade Capability</div>
+        <div class="signal-card-desc">Plumbers who also handle gas lines, water heaters, and drain cleaning trade at a premium vs. single-service operators. ARS identifies service breadth from job descriptions and reviews.</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-card-icon" style="background:var(--cream3)">🔧</div>
+        <div class="signal-card-title">Legacy Dispatch Systems</div>
+        <div class="signal-card-desc">Businesses using manual dispatch or outdated field service software (pre-2020 versions of ServiceTitan or Jobber) signal operational improvement opportunity post-acquisition.</div>
+      </div>
+      <div class="signal-card">
+        <div class="signal-card-icon" style="background:var(--rose-l)">📍</div>
+        <div class="signal-card-title">Geographic Route Density</div>
+        <div class="signal-card-desc">ARS identifies plumbing operators in suburban and exurban markets where route consolidation adds immediate margin — a key value creation lever in home services roll-ups.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Sample Scored Targets -->
+<section class="section section-cream2">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Sample Pipeline</div></div>
+      <h2 class="section-title">Example plumbing targets scored by ARS</h2>
+      <p class="section-sub">This is a sample of how ARS Engine scores and ranks plumbing acquisition targets from a typical 50-company input list.</p>
+    </div>
+    <div class="targets-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>ARS Score</th>
+            <th>Exit Signal</th>
+            <th>Fin. Health</th>
+            <th>Ops</th>
+            <th>Est. Revenue</th>
+            <th>Employees</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Blue Ridge Plumbing Co.</strong><br><span style="font-size:10px;color:var(--ink4)">Raleigh, NC · 26 yrs</span></td>
+            <td><span class="ars-score-pill pill-S">S · 89</span></td>
+            <td style="color:var(--rose);font-weight:600">92</td><td style="color:var(--teal);font-weight:600">86</td><td>82</td>
+            <td>$1.8M–$2.9M</td><td>24</td>
+          </tr>
+          <tr>
+            <td><strong>Clearwater Pipe & Drain</strong><br><span style="font-size:10px;color:var(--ink4)">Charlotte, NC · 19 yrs</span></td>
+            <td><span class="ars-score-pill pill-S">S · 83</span></td>
+            <td style="color:var(--rose);font-weight:600">86</td><td style="color:var(--teal);font-weight:600">79</td><td>77</td>
+            <td>$1.1M–$1.9M</td><td>16</td>
+          </tr>
+          <tr>
+            <td><strong>Tri-County Plumbing LLC</strong><br><span style="font-size:10px;color:var(--ink4)">Durham, NC · 34 yrs</span></td>
+            <td><span class="ars-score-pill pill-A">A · 76</span></td>
+            <td style="color:var(--rose);font-weight:600">90</td><td style="color:var(--teal);font-weight:600">62</td><td>69</td>
+            <td>$820K–$1.4M</td><td>12</td>
+          </tr>
+          <tr>
+            <td><strong>Premier Flow Solutions</strong><br><span style="font-size:10px;color:var(--ink4)">Cary, NC · 11 yrs</span></td>
+            <td><span class="ars-score-pill pill-A">A · 68</span></td>
+            <td style="color:var(--amber-d);font-weight:600">62</td><td style="color:var(--teal);font-weight:600">81</td><td>65</td>
+            <td>$2.1M–$3.2M</td><td>31</td>
+          </tr>
+          <tr>
+            <td><strong>Lakeview Drain Services</strong><br><span style="font-size:10px;color:var(--ink4)">Greensboro, NC · 7 yrs</span></td>
+            <td><span class="ars-score-pill pill-B">B · 51</span></td>
+            <td style="color:var(--amber-d);font-weight:600">44</td><td style="color:var(--teal);font-weight:600">58</td><td>52</td>
+            <td>$520K–$900K</td><td>9</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:16px;font-size:11px;color:var(--ink4);text-align:center;font-family:'JetBrains Mono',monospace">Sample data for illustration. Real scores generated from live web signals + Claude AI analysis.</div>
+  </div>
+</section>
+
+<!-- How ARS Works -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-header text-center">
+      <h2 class="section-title">How to build your plumbing acquisition pipeline</h2>
+    </div>
+    <div class="hiw-grid">
+      <div class="hiw-step"><div class="hiw-num">01</div><div class="hiw-icon">📥</div><div class="hiw-title">Export from SaaSquatch</div><div class="hiw-desc">Filter SaaSquatch by plumbing SIC codes (1711, 7382) in your target geography. Export as CSV — typically 50–200 companies.</div><div class="hiw-arrow">→</div></div>
+      <div class="hiw-step"><div class="hiw-num">02</div><div class="hiw-icon">⚡</div><div class="hiw-title">Upload to ARS Engine</div><div class="hiw-desc">Drop your CSV into ARS Engine. Column normalization handles any SaaSquatch export format automatically.</div><div class="hiw-arrow">→</div></div>
+      <div class="hiw-step"><div class="hiw-num">03</div><div class="hiw-icon">🎯</div><div class="hiw-title">Score & Rank</div><div class="hiw-desc">Every company gets a 5-dimension ARS score in under 3 minutes. Tier S and A targets rise to the top automatically.</div><div class="hiw-arrow">→</div></div>
+      <div class="hiw-step"><div class="hiw-num">04</div><div class="hiw-icon">📧</div><div class="hiw-title">AI Outreach Email</div><div class="hiw-desc">ARS drafts a personalized acquisition outreach email per Tier S/A target, referencing their specific exit signals and business tenure.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-sm section-dark">
+  <div class="section-inner">
+    <div class="cta-box">
+      <div style="position:relative;z-index:1">
+        <h2 class="section-title section-title-dark" style="font-size:28px;margin-bottom:12px">Start scoring plumbing targets today</h2>
+        <p style="color:rgba(255,255,255,0.45);font-size:13px;margin-bottom:24px;font-weight:300">20 free scores on signup. No credit card. Import your SaaSquatch export in 60 seconds.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <a href="../signup.html" class="btn btn-amber btn-lg">Start Free &#8594;</a>
+          <a href="../sandbox.html" class="btn btn-ghost-dark btn-lg">Try Sandbox</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer ars-footer"></footer>
+<script src="../shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARS Engine vs SaaSquatch — Acquisition Intelligence Comparison</title>
+<meta name="description" content="ARS Engine vs SaaSquatch: a head-to-head comparison for PE deal sourcing. SaaSquatch finds leads. ARS Engine tells you which ones are ready to be acquired.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+.vs-hero{background:var(--navy);padding:72px 40px 56px;position:relative;overflow:hidden;text-align:center}
+.vs-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:50px 50px;pointer-events:none}
+.vs-hero-inner{max-width:900px;margin:0 auto;position:relative;z-index:1}
+.vs-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(232,150,10,0.12);border:1px solid rgba(232,150,10,0.3);border-radius:99px;padding:6px 16px;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:20px}
+
+/* Comparison table */
+.cmp-table-wrap{background:#fff;border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;box-shadow:var(--shadow2)}
+.cmp-thead{display:grid;grid-template-columns:2fr 1fr 1fr;background:var(--navy);border-bottom:1px solid var(--wborder)}
+.cmp-th{padding:20px 24px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.cmp-th.feature-col{color:rgba(255,255,255,0.4)}
+.cmp-th.ars-col{color:var(--amber);display:flex;align-items:center;gap:8px}
+.cmp-th.saas-col{color:rgba(255,255,255,0.35)}
+.ars-mark{width:20px;height:20px;background:var(--amber);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:var(--navy)}
+
+.cmp-section-hdr{grid-column:1/-1;background:var(--cream2);padding:10px 24px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);border-bottom:1px solid var(--border)}
+
+.cmp-row{display:grid;grid-template-columns:2fr 1fr 1fr;border-bottom:1px solid var(--border);transition:background .12s}
+.cmp-row:last-child{border-bottom:none}
+.cmp-row:hover{background:var(--cream2)}
+.cmp-cell{padding:16px 24px;display:flex;align-items:center;gap:10px;font-size:13px}
+.cmp-cell.feature{color:var(--ink2);font-weight:500}
+.cmp-cell.ars{justify-content:center}
+.cmp-cell.saas{justify-content:center}
+.cmp-feature-sub{display:block;font-size:11px;color:var(--ink4);font-weight:300;margin-top:2px}
+
+.check-yes{width:24px;height:24px;border-radius:50%;background:var(--teal-l);border:1.5px solid var(--teal);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--teal);font-weight:700;flex-shrink:0}
+.check-no{width:24px;height:24px;border-radius:50%;background:var(--cream3);border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--ink4);flex-shrink:0}
+.check-partial{width:24px;height:24px;border-radius:50%;background:var(--amber-l);border:1.5px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--amber-d);flex-shrink:0;font-weight:700}
+.check-best{background:var(--teal-l);border-color:var(--teal);font-weight:800;font-size:10px}
+
+/* Verdict cards */
+.verdict-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:900px;margin:0 auto}
+.verdict-card{border-radius:var(--r2);padding:28px;border:1px solid var(--border)}
+.verdict-card.ars{background:var(--navy);border-color:var(--amber)}
+.verdict-card.saas{background:#fff}
+.verdict-title{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px}
+.verdict-subtitle{font-size:12px;margin-bottom:16px;font-weight:300;line-height:1.5}
+.verdict-tag{display:inline-flex;padding:4px 12px;border-radius:99px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
+.verdict-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.verdict-list li{display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.55}
+.verdict-list li::before{content:'→';flex-shrink:0;margin-top:1px}
+
+/* Positioning line */
+.positioning-block{background:var(--amber);border-radius:var(--r3);padding:48px;text-align:center;position:relative;overflow:hidden}
+.positioning-block::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.1) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.1) 1px,transparent 1px);background-size:30px 30px}
+.positioning-quote{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--navy);line-height:1.25;position:relative;z-index:1;letter-spacing:-0.5px}
+.positioning-quote em{font-style:italic}
+.positioning-sub{font-size:13px;color:rgba(13,27,42,0.6);margin-top:12px;position:relative;z-index:1}
+
+@media(max-width:768px){
+  .cmp-thead,.cmp-row{grid-template-columns:1.5fr 1fr 1fr}
+  .cmp-cell{padding:12px 14px;font-size:11px}
+  .verdict-grid{grid-template-columns:1fr}
+  .positioning-quote{font-size:20px}
+}
+</style>
+</head>
+<body>
+
+<div id="ars-header"></div>
+
+<!-- HERO -->
+<div class="vs-hero">
+  <div class="vs-hero-inner">
+    <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:24px">
+      <div style="background:var(--amber);border-radius:8px;padding:8px 16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:var(--navy)">ARS Engine</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800;color:rgba(255,255,255,0.3)">VS</div>
+      <div style="background:rgba(255,255,255,0.08);border:1px solid var(--wborder2);border-radius:8px;padding:8px 16px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;color:rgba(255,255,255,0.5)">SaaSquatch</div>
+    </div>
+    <div class="section-eyebrow" style="justify-content:center"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Head-to-Head Comparison</div></div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:42px;font-weight:900;color:#fff;letter-spacing:-1.5px;margin-bottom:14px;line-height:1.1">SaaSquatch finds leads.<br><em style="color:var(--amber);font-style:italic">ARS Engine</em> tells you which ones<br>are ready to be acquired.</h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.5);max-width:560px;margin:0 auto;line-height:1.8;font-weight:300">SaaSquatch is a generic lead gen tool. ARS Engine is purpose-built for PE deal sourcing — with 5-dimension acquisition scoring, AI analysis, and live web signals that SaaSquatch doesn't have.</p>
+  </div>
+</div>
+
+<!-- QUICK STATS -->
+<div style="background:var(--cream2);border-bottom:1px solid var(--border);padding:28px 40px">
+  <div style="max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;background:#fff">
+    <div style="padding:20px;text-align:center;border-right:1px solid var(--border)">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:800;color:var(--amber)">5</div>
+      <div style="font-size:11px;color:var(--ink4);letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace">Scoring Dimensions</div>
+      <div style="font-size:10px;color:var(--teal);margin-top:4px;font-weight:600">ARS Engine only</div>
+    </div>
+    <div style="padding:20px;text-align:center;border-right:1px solid var(--border)">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:800;color:var(--amber)">94%</div>
+      <div style="font-size:11px;color:var(--ink4);letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace">Scoring Accuracy</div>
+      <div style="font-size:10px;color:var(--teal);margin-top:4px;font-weight:600">vs manual analyst</div>
+    </div>
+    <div style="padding:20px;text-align:center;border-right:1px solid var(--border)">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:800;color:var(--amber)">3min</div>
+      <div style="font-size:11px;color:var(--ink4);letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace">CSV to Scored Pipeline</div>
+      <div style="font-size:10px;color:var(--ink4);margin-top:4px">SaaSquatch: export only</div>
+    </div>
+    <div style="padding:20px;text-align:center">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:32px;font-weight:800;color:var(--amber)">$0</div>
+      <div style="font-size:11px;color:var(--ink4);letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace">To Start</div>
+      <div style="font-size:10px;color:var(--teal);margin-top:4px;font-weight:600">20 free scores, no card</div>
+    </div>
+  </div>
+</div>
+
+<!-- COMPARISON TABLE -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-header text-center">
+      <div class="section-eyebrow" style="justify-content:center"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Feature Comparison</div></div>
+      <h2 class="section-title">The full picture, feature by feature</h2>
+    </div>
+
+    <div class="cmp-table-wrap">
+      <!-- Header -->
+      <div class="cmp-thead">
+        <div class="cmp-th feature-col">Feature</div>
+        <div class="cmp-th ars-col"><div class="ars-mark">A</div>ARS Engine</div>
+        <div class="cmp-th saas-col">SaaSquatch</div>
+      </div>
+
+      <!-- CORE INTELLIGENCE -->
+      <div style="background:var(--cream2);padding:10px 24px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);border-bottom:1px solid var(--border)">&#127919; Core Intelligence</div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Acquisition Readiness Scoring<span class="cmp-feature-sub">Composite score across 5 PE dimensions</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Owner Exit Signal Detection<span class="cmp-feature-sub">Age, COO postings, tenure, succession signals</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Financial Health Scoring<span class="cmp-feature-sub">Revenue estimation, growth, hiring velocity</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Operational Leverage Score<span class="cmp-feature-sub">Systems, team structure, scalability signals</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Tier Classification (S/A/B/C)<span class="cmp-feature-sub">Ranked acquisition priority tiers</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+
+      <!-- AI & ENRICHMENT -->
+      <div style="background:var(--cream2);padding:10px 24px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);border-bottom:1px solid var(--border);border-top:1px solid var(--border)">&#129302; AI & Enrichment</div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Claude AI Acquisition Thesis<span class="cmp-feature-sub">Plain-English deal rationale per target</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">AI Risk Flag Detection<span class="cmp-feature-sub">Automated risk & red flag identification</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">AI Outreach Email Writer<span class="cmp-feature-sub">Personalized acquisition email per target</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Live Web Signal Scraping<span class="cmp-feature-sub">Real-time COO postings, tech stack, signals</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+
+      <!-- LEAD GEN (shared ground) -->
+      <div style="background:var(--cream2);padding:10px 24px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);border-bottom:1px solid var(--border);border-top:1px solid var(--border)">&#128202; Lead Generation</div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">SMB Lead Database<span class="cmp-feature-sub">Searchable database of small businesses</span></div>
+        <div class="cmp-cell ars"><div class="check-partial">~</div></div>
+        <div class="cmp-cell saas"><div class="check-yes">✓</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">CSV Import (SaaSquatch / Apollo)<span class="cmp-feature-sub">Ingest & normalize any CSV export</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Contact Email Finder<span class="cmp-feature-sub">Decision-maker email discovery</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-yes">✓</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Phone Number Finder<span class="cmp-feature-sub">Direct-dial contact discovery</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-partial">~</div></div>
+      </div>
+
+      <!-- WORKFLOW -->
+      <div style="background:var(--cream2);padding:10px 24px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);border-bottom:1px solid var(--border);border-top:1px solid var(--border)">&#9881;&#65039; Workflow & Export</div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Scored CSV Export<span class="cmp-feature-sub">Export with all scoring dimensions</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-partial">~</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Smart Alerts Engine<span class="cmp-feature-sub">"3 new Tier S targets this week" notifications</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">CRM Sync (Salesforce / HubSpot)<span class="cmp-feature-sub">Direct push to CRM deal stages</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">No-Signup Live Sandbox<span class="cmp-feature-sub">Score companies before creating account</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+
+      <!-- PRICING -->
+      <div style="background:var(--cream2);padding:10px 24px;font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);border-bottom:1px solid var(--border);border-top:1px solid var(--border)">&#128176; Pricing & Access</div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Free Tier Available<span class="cmp-feature-sub">No credit card required to start</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell feature">Built for PE / ETA Searchers<span class="cmp-feature-sub">Purpose-built workflows, not generic sales</span></div>
+        <div class="cmp-cell ars"><div class="check-yes">✓</div></div>
+        <div class="cmp-cell saas"><div class="check-no">✕</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POSITIONING BLOCK -->
+<section class="section-sm section-cream2">
+  <div class="section-inner">
+    <div class="positioning-block">
+      <div class="positioning-quote">"SaaSquatch exports a CSV and hopes you come back.<br>ARS Engine tells you <em>which 3 companies to call Monday morning</em>."</div>
+      <div class="positioning-sub">— The core difference, in one sentence</div>
+    </div>
+  </div>
+</section>
+
+<!-- VERDICT CARDS -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-header text-center">
+      <h2 class="section-title">Which tool is right for you?</h2>
+    </div>
+    <div class="verdict-grid">
+      <div class="verdict-card ars">
+        <div class="verdict-tag" style="background:rgba(232,150,10,0.2);color:var(--amber)">&#9733; Choose ARS Engine if...</div>
+        <div class="verdict-title" style="color:#fff">You're sourcing deals, not just leads</div>
+        <div class="verdict-subtitle" style="color:rgba(255,255,255,0.5)">ARS Engine is purpose-built for PE searchers who need acquisition intelligence, not generic contact data.</div>
+        <ul class="verdict-list" style="color:rgba(255,255,255,0.7)">
+          <li>You want to know <em>which</em> businesses are ready to sell</li>
+          <li>You need AI acquisition thesis + risk flags per target</li>
+          <li>You're running a deal pipeline, not a sales funnel</li>
+          <li>You want to score 50 companies in 3 minutes, not 3 weeks</li>
+          <li>You use SaaSquatch exports as your raw input data</li>
+        </ul>
+        <div style="margin-top:20px">
+          <a href="signup.html" class="btn btn-amber btn-lg" style="justify-content:center;width:100%">Start Free &#8594;</a>
+        </div>
+      </div>
+      <div class="verdict-card saas">
+        <div class="verdict-tag" style="background:var(--cream2);color:var(--ink4)">Choose SaaSquatch if...</div>
+        <div class="verdict-title" style="color:var(--ink)">You only need raw lead lists</div>
+        <div class="verdict-subtitle" style="color:var(--ink3)">SaaSquatch works well as a data source — but it stops at exporting contact info. It can't tell you which businesses to pursue.</div>
+        <ul class="verdict-list" style="color:var(--ink3)">
+          <li style="color:var(--ink3);">You only need company name and contact info</li>
+          <li style="color:var(--ink3);">You have a large analyst team to score manually</li>
+          <li style="color:var(--ink3);">You're not doing PE/ETA acquisition sourcing</li>
+          <li style="color:var(--ink3);">You prefer to do all qualification research manually</li>
+        </ul>
+        <div style="margin-top:20px;padding:14px;background:var(--amber-l);border:1px solid var(--amber);border-radius:var(--r)">
+          <div style="font-size:12px;color:var(--ink2);line-height:1.55"><strong>Pro tip:</strong> Use SaaSquatch to generate your raw list, then import that CSV into ARS Engine to score and rank every target automatically.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section class="section-sm section-cream2">
+  <div class="section-inner" style="max-width:720px">
+    <div class="tcard">
+      <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="tcard-quote">I've tried Apollo, ZoomInfo, SaaSquatch, and three other tools. None of them score for acquisition readiness. ARS Engine is the only platform built specifically for PE deal sourcing.</div>
+      <div class="tcard-author">
+        <div class="tcard-av" style="background:var(--violet-l);color:var(--violet)">KL</div>
+        <div>
+          <div class="tcard-name">Kevin Lin</div>
+          <div class="tcard-role">Principal · Summit Ventures</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section section-dark" style="padding-top:56px;padding-bottom:56px">
+  <div class="section-inner text-center">
+    <h2 class="section-title section-title-dark" style="font-size:30px;margin-bottom:12px">Ready to score your first pipeline?</h2>
+    <p style="color:rgba(255,255,255,0.5);margin-bottom:28px;font-size:13px">No credit card. No sales call. Import your SaaSquatch CSV and see every company scored in 3 minutes.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="sandbox.html" class="btn btn-amber btn-lg">Try Live Sandbox — No Signup &#8594;</a>
+      <a href="roi-calculator.html" class="btn btn-ghost-dark btn-lg">Calculate Your ROI</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="ars-footer"></div>
+</footer>
+<div class="toast" id="ars-toast"></div>
+<script src="shared.js"></script>
+</body>
+</html>

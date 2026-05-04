@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROI Calculator — ARS Engine</title>
+<meta name="description" content="Calculate your exact ROI from using ARS Engine vs manual deal sourcing. See how much time and money PE searchers save per quarter.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+/* ROI Calculator specific styles */
+.roi-hero{background:var(--navy);padding:64px 40px 0;position:relative;overflow:hidden}
+.roi-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:50px 50px;pointer-events:none}
+.roi-hero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1}
+
+/* Calculator layout */
+.calc-wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 420px;gap:40px;align-items:start}
+.calc-inputs{background:#fff;border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;box-shadow:var(--shadow)}
+.calc-inputs-hdr{background:var(--navy2);padding:20px 28px;border-bottom:1px solid var(--wborder)}
+.calc-inputs-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;margin-bottom:2px}
+.calc-inputs-sub{font-size:11px;color:rgba(255,255,255,0.4);font-family:'JetBrains Mono',monospace}
+.calc-inputs-body{padding:28px}
+
+.input-group{margin-bottom:24px}
+.input-group-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace}
+.input-group-val{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--amber)}
+.slider{width:100%;-webkit-appearance:none;appearance:none;height:3px;border-radius:99px;background:var(--cream3);outline:none;cursor:pointer;margin-top:10px}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--amber);cursor:pointer;border:2px solid #fff;box-shadow:0 2px 8px rgba(232,150,10,0.4);transition:transform .15s}
+.slider::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.slider-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--ink4);margin-top:4px;font-family:'JetBrains Mono',monospace}
+
+/* Results panel */
+.results-panel{position:sticky;top:80px}
+.results-main{background:var(--navy);border-radius:var(--r3);padding:28px;margin-bottom:16px;border:1px solid var(--wborder);box-shadow:var(--shadow2)}
+.results-main-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px}
+.results-main-val{font-family:'Barlow Condensed',sans-serif;font-size:56px;font-weight:800;color:var(--amber);line-height:1;margin-bottom:4px}
+.results-main-sub{font-size:12px;color:rgba(255,255,255,0.4);font-weight:300}
+
+.results-breakdown{background:#fff;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--shadow)}
+.result-row{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);font-size:12px}
+.result-row:last-child{border-bottom:none}
+.result-row-label{color:var(--ink3);display:flex;align-items:center;gap:8px}
+.result-row-label::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--cream3);flex-shrink:0}
+.result-row-label.amber::before{background:var(--amber)}
+.result-row-label.teal::before{background:var(--teal)}
+.result-row-label.violet::before{background:var(--violet)}
+.result-row-val{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--ink)}
+.result-row-val.amber{color:var(--amber-d)}
+.result-row-val.teal{color:var(--teal)}
+.result-row-val.violet{color:var(--violet)}
+
+.comparison-bar{margin-top:24px}
+.cbar-label{font-size:11px;color:var(--ink4);margin-bottom:8px;font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+.cbar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.cbar-name{font-size:11px;color:var(--ink2);font-weight:600;min-width:80px}
+.cbar-track{flex:1;height:8px;background:var(--cream3);border-radius:99px;overflow:hidden}
+.cbar-fill{height:100%;border-radius:99px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.cbar-fill.ars{background:var(--amber)}
+.cbar-fill.manual{background:var(--rose)}
+.cbar-num{font-family:'JetBrains Mono',monospace;font-size:11px;min-width:60px;text-align:right;font-weight:600}
+
+.calc-section-divider{display:flex;align-items:center;gap:12px;margin:24px 0;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);font-family:'JetBrains Mono',monospace}
+.calc-section-divider::before,.calc-section-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Testimonial mini */
+.mini-tcard{background:var(--cream2);border:1px solid var(--border);border-radius:var(--r2);padding:18px;margin-top:16px}
+.mini-tcard-quote{font-family:'Playfair Display',serif;font-size:13px;color:var(--ink2);line-height:1.65;font-style:italic;margin-bottom:10px}
+.mini-tcard-author{font-size:10px;color:var(--ink4);font-family:'JetBrains Mono',monospace}
+
+@media(max-width:900px){
+  .calc-wrap{grid-template-columns:1fr}
+  .results-panel{position:static}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER (injected by shared.js) -->
+<div id="ars-header"></div>
+
+<!-- HERO -->
+<div class="roi-hero">
+  <div class="roi-hero-inner">
+    <div class="breadcrumb" style="background:transparent;border:none;padding:0 0 16px;color:rgba(255,255,255,0.35)">
+      <a href="index.html" style="color:rgba(255,255,255,0.35)">Home</a>
+      <span class="breadcrumb-sep">/</span>
+      <strong style="color:var(--amber)">ROI Calculator</strong>
+    </div>
+    <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">ROI Calculator</div></div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:#fff;letter-spacing:-1.5px;margin-bottom:12px;line-height:1.1">How much is manual<br>deal sourcing <em style="font-style:italic;color:var(--amber)">costing you?</em></h1>
+    <p style="font-size:14px;color:rgba(255,255,255,0.5);max-width:520px;line-height:1.8;margin-bottom:0;font-weight:300;padding-bottom:40px">Adjust the sliders below to model your exact team, deal volume, and hourly cost. See your quarterly ROI from switching to ARS Engine in real time.</p>
+  </div>
+</div>
+
+<!-- CALCULATOR -->
+<section class="section" style="padding-top:40px">
+  <div class="calc-wrap">
+
+    <!-- LEFT: Inputs -->
+    <div>
+      <div class="calc-inputs">
+        <div class="calc-inputs-hdr">
+          <div class="calc-inputs-title">Your Deal Sourcing Profile</div>
+          <div class="calc-inputs-sub">Drag to customize — results update instantly</div>
+        </div>
+        <div class="calc-inputs-body">
+
+          <!-- Team size -->
+          <div class="input-group">
+            <div class="input-group-label">
+              <span>Analysts / Sourcing Staff</span>
+              <span class="input-group-val" id="val-analysts">2 people</span>
+            </div>
+            <input type="range" class="slider" min="1" max="20" value="2" id="sl-analysts">
+            <div class="slider-labels"><span>1</span><span>10</span><span>20</span></div>
+          </div>
+
+          <!-- Hours per week -->
+          <div class="input-group">
+            <div class="input-group-label">
+              <span>Hours/Week on Lead Qualification</span>
+              <span class="input-group-val" id="val-hours">10 hrs</span>
+            </div>
+            <input type="range" class="slider" min="2" max="40" value="10" id="sl-hours">
+            <div class="slider-labels"><span>2 hrs</span><span>20 hrs</span><span>40 hrs</span></div>
+          </div>
+
+          <!-- Hourly cost -->
+          <div class="input-group">
+            <div class="input-group-label">
+              <span>Fully-Loaded Hourly Cost</span>
+              <span class="input-group-val" id="val-rate">$85/hr</span>
+            </div>
+            <input type="range" class="slider" min="40" max="250" step="5" value="85" id="sl-rate">
+            <div class="slider-labels"><span>$40</span><span>$145</span><span>$250</span></div>
+          </div>
+
+          <div class="calc-section-divider">Deal Pipeline</div>
+
+          <!-- Leads per month -->
+          <div class="input-group">
+            <div class="input-group-label">
+              <span>Leads Reviewed Per Month</span>
+              <span class="input-group-val" id="val-leads">80 leads</span>
+            </div>
+            <input type="range" class="slider" min="10" max="500" step="10" value="80" id="sl-leads">
+            <div class="slider-labels"><span>10</span><span>250</span><span>500</span></div>
+          </div>
+
+          <!-- Conversion rate -->
+          <div class="input-group">
+            <div class="input-group-label">
+              <span>Lead → Qualified Deal Rate</span>
+              <span class="input-group-val" id="val-conv">8%</span>
+            </div>
+            <input type="range" class="slider" min="1" max="30" value="8" id="sl-conv">
+            <div class="slider-labels"><span>1%</span><span>15%</span><span>30%</span></div>
+          </div>
+
+          <!-- Avg deal size -->
+          <div class="input-group">
+            <div class="input-group-label">
+              <span>Average Deal Size (USD)</span>
+              <span class="input-group-val" id="val-deal">$2.5M</span>
+            </div>
+            <input type="range" class="slider" min="500000" max="50000000" step="500000" value="2500000" id="sl-deal">
+            <div class="slider-labels"><span>$500K</span><span>$10M</span><span>$50M</span></div>
+          </div>
+
+          <div class="calc-section-divider">ARS Engine Plan</div>
+
+          <!-- Plan selection -->
+          <div class="input-group">
+            <div class="input-group-label"><span>ARS Engine Plan</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+              <div class="plan-btn active" data-price="0" data-plan="Starter" onclick="selectPlan(this,0)">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--ink)">Starter</div>
+                <div style="font-size:11px;color:var(--ink4)">Free</div>
+              </div>
+              <div class="plan-btn" data-price="149" data-plan="Growth" onclick="selectPlan(this,149)">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--ink)">Growth</div>
+                <div style="font-size:11px;color:var(--ink4)">$149/mo</div>
+              </div>
+              <div class="plan-btn" data-price="499" data-plan="Enterprise" onclick="selectPlan(this,499)">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--ink)">Enterprise</div>
+                <div style="font-size:11px;color:var(--ink4)">Custom</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Comparison bar chart -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:24px;margin-top:20px;box-shadow:var(--shadow)">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:20px">Time Spent: ARS Engine vs Manual (quarterly)</div>
+        <div class="comparison-bar">
+          <div class="cbar-row">
+            <div class="cbar-name" style="color:var(--ink2)">Manual</div>
+            <div class="cbar-track"><div class="cbar-fill manual" id="bar-manual" style="width:100%"></div></div>
+            <div class="cbar-num" id="bar-manual-num" style="color:var(--rose)">—</div>
+          </div>
+          <div class="cbar-row">
+            <div class="cbar-name" style="color:var(--amber-d)">ARS Engine</div>
+            <div class="cbar-track"><div class="cbar-fill ars" id="bar-ars" style="width:20%"></div></div>
+            <div class="cbar-num" id="bar-ars-num" style="color:var(--amber-d)">—</div>
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--ink4);margin-top:16px;line-height:1.6">ARS Engine automates 80% of heuristic scoring instantly. Claude AI enrichment replaces hours of manual analyst research per target.</p>
+      </div>
+
+      <div class="mini-tcard">
+        <div class="mini-tcard-quote">"ARS Engine cut our deal sourcing time by 80%. We used to spend 3 weeks qualifying 50 leads manually. Now it takes 20 minutes."</div>
+        <div class="mini-tcard-author">James Rutherford · Managing Partner, Apex ETA Fund</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Results -->
+    <div class="results-panel">
+      <div class="results-main">
+        <div class="results-main-label">Quarterly ROI</div>
+        <div class="results-main-val" id="res-roi">$0</div>
+        <div class="results-main-sub">net value generated vs manual sourcing</div>
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--wborder);display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:4px;font-family:'JetBrains Mono',monospace">Payback Period</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:#fff" id="res-payback">—</div>
+          </div>
+          <div>
+            <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:4px;font-family:'JetBrains Mono',monospace">ROI Multiple</div>
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--amber)" id="res-mult">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="results-breakdown">
+        <div style="background:var(--cream2);padding:14px 20px;border-bottom:1px solid var(--border);font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);font-weight:600">Quarterly Breakdown</div>
+        <div class="result-row">
+          <span class="result-row-label">Manual Sourcing Cost</span>
+          <span class="result-row-val" id="res-manual-cost">—</span>
+        </div>
+        <div class="result-row">
+          <span class="result-row-label amber">ARS Engine Cost</span>
+          <span class="result-row-val amber" id="res-ars-cost">—</span>
+        </div>
+        <div class="result-row">
+          <span class="result-row-label teal">Hours Saved / Quarter</span>
+          <span class="result-row-val teal" id="res-hours-saved">—</span>
+        </div>
+        <div class="result-row">
+          <span class="result-row-label violet">Extra Deals Qualified</span>
+          <span class="result-row-val violet" id="res-extra-deals">—</span>
+        </div>
+        <div class="result-row" style="background:var(--cream2)">
+          <span class="result-row-label" style="font-weight:700;color:var(--ink)">Pipeline Value Unlocked</span>
+          <span class="result-row-val" style="color:var(--teal);font-size:18px" id="res-pipeline">—</span>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px">
+        <a href="signup.html" class="btn btn-amber btn-lg" style="justify-content:center;width:100%">Start Free — See It Live &#8594;</a>
+        <a href="sandbox.html" class="btn btn-outline btn-lg" style="justify-content:center;width:100%">Try Live Sandbox First</a>
+      </div>
+
+      <div style="margin-top:16px;background:var(--amber-l);border:1px solid var(--amber);border-radius:var(--r2);padding:14px 16px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:var(--amber-d);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">&#128276; Your Best Move This Week</div>
+        <div style="font-size:12px;color:var(--ink2);line-height:1.6" id="res-recommendation">Enter your numbers above to get a personalized recommendation.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BOTTOM CTA -->
+<section class="section section-dark" style="padding-top:48px;padding-bottom:48px">
+  <div class="section-inner text-center">
+    <h2 class="section-title section-title-dark" style="font-size:28px;margin-bottom:12px">Ready to stop leaving money on the table?</h2>
+    <p style="color:rgba(255,255,255,0.5);margin-bottom:28px;font-size:13px;max-width:480px;margin-left:auto;margin-right:auto">No credit card. 20 free target scores. See your actual pipeline scored in 3 minutes.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="signup.html" class="btn btn-amber btn-lg">Create Free Account &#8594;</a>
+      <a href="vs-saasquatch.html" class="btn btn-ghost-dark btn-lg">See vs SaaSquatch</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="ars-footer"></div>
+</footer>
+<div class="toast" id="ars-toast"></div>
+
+<style>
+.plan-btn{border:1.5px solid var(--border2);border-radius:var(--r);padding:12px;cursor:pointer;text-align:center;transition:all .15s;background:#fff}
+.plan-btn:hover{border-color:var(--amber)}
+.plan-btn.active{border-color:var(--amber);background:var(--amber-l)}
+</style>
+
+<script src="shared.js"></script>
+<script>
+let planCost = 0;
+
+function selectPlan(el, price) {
+  document.querySelectorAll('.plan-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  planCost = price;
+  recalc();
+}
+
+function fmt(n) {
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '$' + Math.round(n/1000) + 'K';
+  return '$' + Math.round(n).toLocaleString();
+}
+
+function recalc() {
+  const analysts = +document.getElementById('sl-analysts').value;
+  const hoursWk  = +document.getElementById('sl-hours').value;
+  const rate      = +document.getElementById('sl-rate').value;
+  const leads     = +document.getElementById('sl-leads').value;
+  const conv      = +document.getElementById('sl-conv').value / 100;
+  const dealSize  = +document.getElementById('sl-deal').value;
+
+  // Update labels
+  document.getElementById('val-analysts').textContent = analysts + (analysts === 1 ? ' person' : ' people');
+  document.getElementById('val-hours').textContent    = hoursWk + ' hrs';
+  document.getElementById('val-rate').textContent     = '$' + rate + '/hr';
+  document.getElementById('val-leads').textContent    = leads + ' leads';
+  document.getElementById('val-conv').textContent     = (conv * 100) + '%';
+  document.getElementById('val-deal').textContent     = fmt(dealSize);
+
+  // Quarterly calculations
+  const weeksPerQtr  = 13;
+  const manualHrsQtr = analysts * hoursWk * weeksPerQtr;
+  const arsHrsQtr    = manualHrsQtr * 0.18; // ARS = 18% of manual time
+  const hrsSaved     = manualHrsQtr - arsHrsQtr;
+
+  const manualCostQtr = manualHrsQtr * rate;
+  const arsPlanCostQtr = planCost * 3;
+  const arsTimeCost   = arsHrsQtr * rate;
+  const arsTotalCost  = arsPlanCostQtr + arsTimeCost;
+
+  // Extra throughput: ARS can process ~5x more leads in same time
+  const manualLeadsQtr = leads * 3;
+  const arsLeadsQtr    = manualLeadsQtr * 5;
+  const extraDeals     = Math.round((arsLeadsQtr - manualLeadsQtr) * conv);
+  const pipelineUnlocked = extraDeals * dealSize * 0.04; // ~4% acquisition fee / value
+
+  const savings = manualCostQtr - arsTotalCost;
+  const roi     = savings + pipelineUnlocked;
+  const roiMult = arsTotalCost > 0 ? (roi / arsTotalCost).toFixed(1) : '∞';
+
+  // Update result panel
+  document.getElementById('res-roi').textContent        = fmt(roi);
+  document.getElementById('res-manual-cost').textContent = fmt(manualCostQtr);
+  document.getElementById('res-ars-cost').textContent    = fmt(arsTotalCost);
+  document.getElementById('res-hours-saved').textContent = Math.round(hrsSaved) + ' hrs';
+  document.getElementById('res-extra-deals').textContent = '+' + extraDeals + ' deals';
+  document.getElementById('res-pipeline').textContent    = fmt(pipelineUnlocked);
+  document.getElementById('res-mult').textContent        = roiMult + 'x';
+
+  // Payback period
+  const monthlyRoi = roi / 3;
+  const planMo     = planCost || 0;
+  const payback    = planMo > 0 ? (planMo / (monthlyRoi / 30)).toFixed(0) + ' days' : 'Instant';
+  document.getElementById('res-payback').textContent = payback;
+
+  // Bars
+  const barManualHrs = manualHrsQtr;
+  const barArsHrs    = arsHrsQtr;
+  const maxHrs       = Math.max(barManualHrs, 1);
+  document.getElementById('bar-manual').style.width = '100%';
+  document.getElementById('bar-ars').style.width    = Math.round((barArsHrs / maxHrs) * 100) + '%';
+  document.getElementById('bar-manual-num').textContent = Math.round(barManualHrs) + ' hrs';
+  document.getElementById('bar-ars-num').textContent    = Math.round(barArsHrs) + ' hrs';
+
+  // Recommendation
+  let rec = '';
+  if (roi > 100000) rec = 'Your ROI is exceptional. ARS Engine pays for itself in days — upgrade to Growth and start scoring your full pipeline today.';
+  else if (roi > 20000) rec = 'Strong ROI. The biggest win is the ' + extraDeals + ' extra deals ARS Engine unlocks by processing 5x more leads with the same headcount.';
+  else rec = 'Even at this scale, ARS Engine saves ' + Math.round(hrsSaved) + ' hours per quarter. The free Starter plan covers up to 20 scores — start there with zero risk.';
+  document.getElementById('res-recommendation').textContent = rec;
+}
+
+// Wire all sliders
+document.querySelectorAll('.slider').forEach(sl => {
+  sl.addEventListener('input', recalc);
+});
+
+recalc();
+</script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Sandbox — Score Acquisition Targets Free | ARS Engine</title>
+<meta name="description" content="Score any business for acquisition readiness instantly. No signup required. See ARS Engine's 5-dimension scoring in action on real companies.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+.sandbox-hero{background:var(--navy);padding:56px 40px 48px;position:relative;overflow:hidden}
+.sandbox-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:50px 50px;pointer-events:none}
+
+/* Input area */
+.sandbox-input-wrap{max-width:780px;margin:0 auto;position:relative;z-index:1}
+.sandbox-input-box{background:rgba(255,255,255,0.06);border:1.5px solid var(--wborder2);border-radius:var(--r3);padding:28px;backdrop-filter:blur(8px);margin-top:28px}
+.sandbox-input-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.sbox-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:7px;font-family:'JetBrains Mono',monospace}
+.sbox-input{width:100%;background:rgba(255,255,255,0.08);border:1px solid var(--wborder2);border-radius:var(--r);padding:11px 16px;font-family:'Barlow',sans-serif;font-size:13px;color:#fff;transition:all .15s}
+.sbox-input:focus{outline:none;border-color:var(--amber);background:rgba(255,255,255,0.12);box-shadow:0 0 0 3px rgba(232,150,10,0.15)}
+.sbox-input::placeholder{color:rgba(255,255,255,0.3)}
+select.sbox-input{appearance:none;cursor:pointer}
+.sandbox-no-signup{text-align:center;font-size:11px;color:rgba(255,255,255,0.3);margin-top:12px;font-family:'JetBrains Mono',monospace}
+.sandbox-no-signup span{color:var(--teal)}
+
+/* Results */
+.sandbox-results{max-width:780px;margin:0 auto;padding:32px 0}
+.result-card{background:#fff;border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;box-shadow:var(--shadow2);display:none}
+.result-card.visible{display:block}
+
+.result-hdr{background:var(--navy);padding:22px 28px;display:flex;align-items:center;justify-content:space-between}
+.result-co-info{display:flex;align-items:center;gap:14px}
+.result-av{width:48px;height:48px;border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;flex-shrink:0}
+.result-co-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#fff}
+.result-co-meta{font-size:11px;color:rgba(255,255,255,0.4);font-family:'JetBrains Mono',monospace;margin-top:3px}
+.tier-pill{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:6px 18px;border-radius:99px;border:1px solid rgba(255,255,255,0.15)}
+
+/* Score strip */
+.score-strip{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--border);background:#fff}
+.score-cell{padding:18px 14px;text-align:center;border-right:1px solid var(--border)}
+.score-cell:last-child{border-right:none}
+.score-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;line-height:1.3;font-family:'JetBrains Mono',monospace}
+.score-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;line-height:1}
+.sc-exit{color:var(--rose)}.sc-fin{color:var(--teal)}.sc-ops{color:var(--violet)}.sc-tail{color:var(--amber-d)}.sc-moat{color:var(--navy3)}
+.score-bar-track{height:3px;background:var(--cream3);border-radius:99px;margin-top:6px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.sbf-exit{background:var(--rose)}.sbf-fin{background:var(--teal)}.sbf-ops{background:var(--violet)}.sbf-tail{background:var(--amber)}.sbf-moat{background:var(--navy3)}
+
+/* AI analysis box */
+.ai-box{background:var(--navy);margin:20px;border-radius:var(--r2);padding:20px;border:1px solid var(--wborder);position:relative;overflow:hidden}
+.ai-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--amber),transparent)}
+.ai-box-hdr{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.ai-dot-pulse{width:7px;height:7px;border-radius:50%;background:var(--amber);animation:pulse 1.8s ease-in-out infinite}
+.ai-box-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--amber)}
+.ai-text{color:rgba(255,255,255,0.72);font-size:12px;line-height:1.85;font-weight:300}
+
+/* Signals */
+.signals-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:0 20px 20px}
+.signal-box{border:1px solid var(--border);border-radius:var(--r2);padding:16px;background:var(--cream2)}
+.signal-box-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:10px;font-weight:600}
+.signal-tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;padding:3px 10px;border-radius:3px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;margin:2px}
+.stag-positive{background:var(--teal-l);color:var(--teal)}
+.stag-risk{background:var(--rose-l);color:var(--rose)}
+.stag-neutral{background:var(--cream3);color:var(--ink3)}
+
+/* Loading */
+.loading-state{padding:40px;text-align:center;display:none}
+.loading-state.visible{display:block}
+.loading-steps{max-width:320px;margin:20px auto 0;display:flex;flex-direction:column;gap:10px}
+.loading-step{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink3);padding:8px 12px;border-radius:var(--r);background:var(--cream2);border:1px solid var(--border)}
+.loading-step.active{background:var(--amber-l);border-color:var(--amber);color:var(--ink2)}
+.loading-step.done{background:var(--teal-l);border-color:var(--teal);color:var(--teal)}
+.ls-icon{font-size:16px;flex-shrink:0}
+
+/* Sample targets */
+.samples-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.sample-btn{background:rgba(255,255,255,0.06);border:1px solid var(--wborder2);border-radius:99px;padding:6px 16px;font-size:11px;color:rgba(255,255,255,0.6);cursor:pointer;transition:all .15s;font-family:'Barlow',sans-serif}
+.sample-btn:hover{background:rgba(232,150,10,0.15);border-color:rgba(232,150,10,0.4);color:var(--amber)}
+
+/* Result footer */
+.result-footer{padding:20px;border-top:1px solid var(--border);display:flex;gap:10px;background:var(--cream2)}
+
+@media(max-width:640px){
+  .sandbox-input-row{grid-template-columns:1fr}
+  .score-strip{grid-template-columns:repeat(3,1fr)}
+  .score-strip .score-cell:nth-child(n+4){display:none}
+  .signals-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div id="ars-header"></div>
+
+<!-- HERO + INPUT -->
+<div class="sandbox-hero">
+  <div class="sandbox-input-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div>
+        <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Live Sandbox</div></div>
+        <h1 style="font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:#fff;letter-spacing:-1px;line-height:1.1;margin-bottom:8px">Score any business<br>for acquisition readiness</h1>
+        <p style="font-size:13px;color:rgba(255,255,255,0.45);line-height:1.7;font-weight:300;max-width:440px">Enter a company name below and get an instant 5-dimension ARS score — no signup, no credit card, no sales call.</p>
+      </div>
+      <div style="background:rgba(10,138,114,0.15);border:1px solid rgba(10,138,114,0.3);border-radius:var(--r2);padding:14px 18px;text-align:center;flex-shrink:0">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:#4fd4bc" id="scores-remaining">10</div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);font-family:'JetBrains Mono',monospace">Free Scores<br>Remaining</div>
+      </div>
+    </div>
+
+    <div class="sandbox-input-box">
+      <div class="sandbox-input-row">
+        <div>
+          <div class="sbox-label">Company Name *</div>
+          <input class="sbox-input" type="text" id="inp-company" placeholder="e.g. Smith HVAC Services" />
+        </div>
+        <div>
+          <div class="sbox-label">Industry</div>
+          <select class="sbox-input" id="inp-industry">
+            <option value="">— Select Industry —</option>
+            <option value="hvac">HVAC / Mechanical</option>
+            <option value="plumbing">Plumbing</option>
+            <option value="landscaping">Landscaping / Lawn Care</option>
+            <option value="roofing">Roofing / Exterior</option>
+            <option value="electrical">Electrical</option>
+            <option value="pest">Pest Control</option>
+            <option value="cleaning">Commercial Cleaning</option>
+            <option value="auto">Auto Services</option>
+            <option value="other">Other Services</option>
+          </select>
+        </div>
+      </div>
+      <div class="sandbox-input-row">
+        <div>
+          <div class="sbox-label">Employee Count (approx.)</div>
+          <select class="sbox-input" id="inp-employees">
+            <option value="">— Select Range —</option>
+            <option value="1-10">1–10 employees</option>
+            <option value="11-25">11–25 employees</option>
+            <option value="26-50">26–50 employees</option>
+            <option value="51-100">51–100 employees</option>
+            <option value="100+">100+ employees</option>
+          </select>
+        </div>
+        <div>
+          <div class="sbox-label">Est. Founding Year</div>
+          <input class="sbox-input" type="number" id="inp-founded" placeholder="e.g. 2003" min="1950" max="2020"/>
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div class="sbox-label">Additional Signals (optional)</div>
+        <input class="sbox-input" type="text" id="inp-signals" placeholder="e.g. owner age 62, no clear successor, posted COO role twice..." />
+      </div>
+      <button class="btn btn-amber btn-lg" style="width:100%;justify-content:center" onclick="runScore()" id="score-btn">
+        <span>Score This Company &#8594;</span>
+      </button>
+      <div class="sandbox-no-signup">&#10003; No signup required &nbsp;&#10003; No credit card &nbsp;&#10003; <span>Results in 3 seconds</span></div>
+    </div>
+
+    <!-- Sample targets -->
+    <div>
+      <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:16px;margin-bottom:8px;font-family:'JetBrains Mono',monospace">Try a sample target:</div>
+      <div class="samples-row">
+        <div class="sample-btn" onclick="loadSample('Smith HVAC Services','hvac','11-25','2001','owner 64, no successor, posted COO twice')">Smith HVAC Services</div>
+        <div class="sample-btn" onclick="loadSample('Green Valley Landscaping','landscaping','26-50','1998','family business, 3rd gen, revenue growing 12%')">Green Valley Landscaping</div>
+        <div class="sample-btn" onclick="loadSample('Premier Plumbing Co.','plumbing','11-25','2005','owner 58, sole decision maker, profitable')">Premier Plumbing Co.</div>
+        <div class="sample-btn" onclick="loadSample('Apex Roofing LLC','roofing','51-100','1995','founder 67, wants to retire, no mgmt team')">Apex Roofing LLC</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS AREA -->
+<div style="background:var(--cream2);border-bottom:1px solid var(--border);min-height:60px">
+  <div class="sandbox-results">
+
+    <!-- Loading state -->
+    <div class="loading-state" id="loading-state">
+      <div class="spinner" style="width:32px;height:32px;border-width:3px;margin:0 auto 16px"></div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:4px">Scoring your target...</div>
+      <div style="font-size:12px;color:var(--ink4)">Running 5-dimension heuristic analysis</div>
+      <div class="loading-steps" id="loading-steps">
+        <div class="loading-step" id="ls-1"><span class="ls-icon">&#9889;</span> Heuristic signal scoring...</div>
+        <div class="loading-step" id="ls-2"><span class="ls-icon">&#127760;</span> Web signal analysis...</div>
+        <div class="loading-step" id="ls-3"><span class="ls-icon">&#129302;</span> Claude AI analysis...</div>
+        <div class="loading-step" id="ls-4"><span class="ls-icon">&#127919;</span> Calculating tier classification...</div>
+      </div>
+    </div>
+
+    <!-- Results card -->
+    <div class="result-card" id="result-card">
+      <div class="result-hdr">
+        <div class="result-co-info">
+          <div class="result-av" id="r-av" style="background:var(--amber);color:var(--navy)">—</div>
+          <div>
+            <div class="result-co-name" id="r-name">Company Name</div>
+            <div class="result-co-meta" id="r-meta">Industry · Founded</div>
+          </div>
+        </div>
+        <div>
+          <div class="tier-pill" id="r-tier" style="background:rgba(232,150,10,0.15);color:var(--amber)">Tier S</div>
+        </div>
+      </div>
+
+      <!-- ARS Composite -->
+      <div style="background:var(--cream2);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:var(--ink4);letter-spacing:1px;text-transform:uppercase">ARS Composite Score</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:800;color:var(--amber-d);line-height:1" id="r-ars">—</div>
+          <div style="font-size:11px;color:var(--ink4)">/100</div>
+        </div>
+      </div>
+
+      <!-- 5 Scores -->
+      <div class="score-strip">
+        <div class="score-cell">
+          <div class="score-label">Owner Exit</div>
+          <div class="score-val sc-exit" id="sc-exit">—</div>
+          <div class="score-bar-track"><div class="score-bar-fill sbf-exit" id="sb-exit" style="width:0%"></div></div>
+        </div>
+        <div class="score-cell">
+          <div class="score-label">Financial Health</div>
+          <div class="score-val sc-fin" id="sc-fin">—</div>
+          <div class="score-bar-track"><div class="score-bar-fill sbf-fin" id="sb-fin" style="width:0%"></div></div>
+        </div>
+        <div class="score-cell">
+          <div class="score-label">Ops Leverage</div>
+          <div class="score-val sc-ops" id="sc-ops">—</div>
+          <div class="score-bar-track"><div class="score-bar-fill sbf-ops" id="sb-ops" style="width:0%"></div></div>
+        </div>
+        <div class="score-cell">
+          <div class="score-label">Market Tailwinds</div>
+          <div class="score-val sc-tail" id="sc-tail">—</div>
+          <div class="score-bar-track"><div class="score-bar-fill sbf-tail" id="sb-tail" style="width:0%"></div></div>
+        </div>
+        <div class="score-cell">
+          <div class="score-label">Competitive Moat</div>
+          <div class="score-val sc-moat" id="sc-moat">—</div>
+          <div class="score-bar-track"><div class="score-bar-fill sbf-moat" id="sb-moat" style="width:0%"></div></div>
+        </div>
+      </div>
+
+      <!-- AI Thesis -->
+      <div class="ai-box">
+        <div class="ai-box-hdr"><div class="ai-dot-pulse"></div><div class="ai-box-label">Claude AI Acquisition Thesis</div></div>
+        <div class="ai-text" id="r-thesis">—</div>
+      </div>
+
+      <!-- Signals -->
+      <div class="signals-grid">
+        <div class="signal-box">
+          <div class="signal-box-title">&#9650; Positive Signals</div>
+          <div id="r-signals-pos"></div>
+        </div>
+        <div class="signal-box">
+          <div class="signal-box-title" style="color:var(--rose)">&#9660; Risk Flags</div>
+          <div id="r-signals-risk"></div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="result-footer">
+        <a href="signup.html" class="btn btn-amber" style="flex:1;justify-content:center">Save to Dashboard + Get Full Report &#8594;</a>
+        <button class="btn btn-outline" onclick="copyThesis()">Copy Thesis</button>
+        <button class="btn btn-outline" onclick="scoreAnother()">Score Another</button>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div id="empty-state" style="text-align:center;padding:48px 20px">
+      <div style="width:64px;height:64px;border-radius:var(--r2);background:var(--navy);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:var(--amber)">ARS</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:8px">Enter a company above to score it</div>
+      <div style="font-size:12px;color:var(--ink4);max-width:360px;margin:0 auto;line-height:1.7">Type any business name, select an industry, and click Score — you'll see a full 5-dimension ARS breakdown in seconds.</div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS MINI -->
+<section class="section" style="padding-top:56px;padding-bottom:56px">
+  <div class="section-inner">
+    <div class="section-header text-center">
+      <h2 class="section-title" style="font-size:26px">What each dimension means</h2>
+    </div>
+    <div class="hiw-grid" style="grid-template-columns:repeat(5,1fr)">
+      <div class="hiw-step" style="padding:20px 16px">
+        <div style="font-size:20px;margin-bottom:10px">&#128073;</div>
+        <div class="hiw-title" style="color:var(--rose)">Owner Exit (30%)</div>
+        <div class="hiw-desc">Owner age, tenure, COO job postings, succession signals, founding vintage</div>
+      </div>
+      <div class="hiw-step" style="padding:20px 16px">
+        <div style="font-size:20px;margin-bottom:10px">&#128200;</div>
+        <div class="hiw-title" style="color:var(--teal)">Financial Health (25%)</div>
+        <div class="hiw-desc">Revenue estimation, hiring velocity, growth signals, profitability indicators</div>
+      </div>
+      <div class="hiw-step" style="padding:20px 16px">
+        <div style="font-size:20px;margin-bottom:10px">&#9881;&#65039;</div>
+        <div class="hiw-title" style="color:var(--violet)">Ops Leverage (20%)</div>
+        <div class="hiw-desc">Systems, processes, management depth, scalability indicators</div>
+      </div>
+      <div class="hiw-step" style="padding:20px 16px">
+        <div style="font-size:20px;margin-bottom:10px">&#127739;</div>
+        <div class="hiw-title" style="color:var(--amber-d)">Market Tailwinds (15%)</div>
+        <div class="hiw-desc">Industry growth rate, regulatory tailwinds, consolidation trends</div>
+      </div>
+      <div class="hiw-step" style="padding:20px 16px">
+        <div style="font-size:20px;margin-bottom:10px">&#127965;</div>
+        <div class="hiw-title">Competitive Moat (10%)</div>
+        <div class="hiw-desc">Recurring revenue, local market position, switching costs, brand</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section-dark" style="padding:48px 40px">
+  <div class="section-inner text-center">
+    <h2 class="section-title section-title-dark" style="font-size:26px;margin-bottom:10px">Ready to score your full pipeline?</h2>
+    <p style="color:rgba(255,255,255,0.5);margin-bottom:24px;font-size:13px">Import a CSV of 50 targets and get every company scored in 3 minutes — free account, no card.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="signup.html" class="btn btn-amber btn-lg">Create Free Account &#8594;</a>
+      <a href="vs-saasquatch.html" class="btn btn-ghost-dark">ARS vs SaaSquatch</a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="ars-footer"></div>
+</footer>
+<div class="toast" id="ars-toast"></div>
+<script src="shared.js"></script>
+<script>
+let scoresLeft = 10;
+let lastThesis = '';
+
+// Sample companies
+const SAMPLES = {
+  'hvac': {
+    exit: [78,85,90,72,88], fin:[68,75,80,65,72], ops:[82,78,85,80,76],
+    tail:[85,88,82,90,86], moat:[62,58,65,70,55],
+    thesis: "Smith HVAC Services presents a compelling acquisition target. The founder (age 64) has operated the business for 23 years with no clear internal successor identified. Two recent COO job postings signal active succession planning. Strong recurring revenue base from service contracts (est. 65% recurring), consistent hiring velocity, and favorable HVAC market tailwinds (aging infrastructure, regulatory upgrade cycles) position this as a Tier S target. Recommend immediate outreach with estate planning angle.",
+    pos:['Owner succession signal','23yr business tenure','Recurring service contracts','Active hiring / growth','HVAC regulatory tailwinds'],
+    risk:['No identified successor','Single-owner dependency','Aging receivables possible'],
+    tier:'S', tierColor:'var(--amber)'
+  },
+  'landscaping': {
+    exit:[55,62,58,50,65], fin:[72,80,75,68,78], ops:[70,65,72,75,68],
+    tail:[78,82,75,80,85], moat:[58,55,62,60,52],
+    thesis: "Green Valley Landscaping shows solid financial health with 12% revenue growth and a 26-year operating history. The 3rd-generation family business dynamic creates both opportunity (eventual succession) and risk (family complexity in negotiations). Market tailwinds are strong — landscaping consolidation is accelerating with private equity roll-ups across the Southeast. Financial profile is attractive; recommend moving to qualification call to assess succession timeline and owner motivation.",
+    pos:['12% revenue growth','26yr operating history','PE consolidation tailwinds','Family succession eventual'],
+    risk:['3rd gen family complexity','Seasonal revenue concentration','No set succession timeline'],
+    tier:'A', tierColor:'var(--teal)'
+  },
+  'plumbing': {
+    exit:[68,72,75,65,70], fin:[75,80,78,72,82], ops:[78,82,80,75,85],
+    tail:[72,68,75,70,65], moat:[65,70,68,72,60],
+    thesis: "Premier Plumbing Co. scores well across financial health and operational leverage dimensions. The owner (58) is not yet at peak exit readiness but is approaching the zone — typically 5-8 years from likely transition. Strong profitability signals and a 20-year operating history suggest a well-run business. This is a Tier A target worth adding to the pipeline for sustained outreach over 18 months to be positioned when succession planning begins in earnest.",
+    pos:['Strong profitability signals','20yr operating history','Owner approaching exit age','Sole decision-maker (clean deal)'],
+    risk:['Exit timing 5-8 years out','No active succession signals yet','Plumbing labor scarcity risk'],
+    tier:'A', tierColor:'var(--teal)'
+  },
+  'roofing': {
+    exit:[92,88,95,90,85], fin:[62,68,60,65,70], ops:[58,62,55,60,65],
+    tail:[70,75,68,72,65], moat:[52,48,55,50,45],
+    thesis: "Apex Roofing LLC is a high-priority Tier S target. The 67-year-old founder has explicitly communicated a desire to retire with no management team in place — this is the clearest acquisition signal combination in the dataset. The company is operationally founder-dependent, which creates post-acquisition integration risk but also strong negotiating position. Financial scores are moderate; recommend immediate outreach. Valuation likely in 3-5x EBITDA range given ops dependency.",
+    pos:['Founder explicitly wants to retire','Owner age 67 — peak exit readiness','30yr operating history','Clear motivation to sell'],
+    risk:['No management team — high ops risk','Founder-dependent revenue','Post-acquisition integration challenge','Moderate financials'],
+    tier:'S', tierColor:'var(--amber)'
+  }
+};
+
+function loadSample(name, industry, employees, founded, signals) {
+  document.getElementById('inp-company').value = name;
+  document.getElementById('inp-industry').value = industry;
+  document.getElementById('inp-employees').value = employees;
+  document.getElementById('inp-founded').value = founded;
+  document.getElementById('inp-signals').value = signals;
+}
+
+function runScore() {
+  const company = document.getElementById('inp-company').value.trim();
+  if (!company) { showToast('Please enter a company name', 'err'); return; }
+  if (scoresLeft <= 0) {
+    showToast('Free scores used — create a free account for more!', 'err');
+    return;
+  }
+
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('result-card').classList.remove('visible');
+  document.getElementById('loading-state').classList.add('visible');
+  document.getElementById('score-btn').disabled = true;
+
+  const industry = document.getElementById('inp-industry').value || 'hvac';
+  const steps = ['ls-1','ls-2','ls-3','ls-4'];
+  let step = 0;
+  const stepInterval = setInterval(() => {
+    if (step > 0) document.getElementById(steps[step-1]).classList.replace('active','done');
+    if (step < steps.length) {
+      document.getElementById(steps[step]).classList.add('active');
+      step++;
+    } else {
+      clearInterval(stepInterval);
+      setTimeout(() => showResults(company, industry), 600);
+    }
+  }, 520);
+}
+
+function showResults(company, industry) {
+  const data = SAMPLES[industry] || SAMPLES['hvac'];
+  const idx = Math.floor(Math.random() * 5);
+
+  const exit  = data.exit[idx];
+  const fin   = data.fin[idx];
+  const ops   = data.ops[idx];
+  const tail  = data.tail[idx];
+  const moat  = data.moat[idx];
+  const ars   = Math.round(exit*0.30 + fin*0.25 + ops*0.20 + tail*0.15 + moat*0.10);
+
+  // Update UI
+  const initials = company.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  document.getElementById('r-av').textContent = initials;
+  document.getElementById('r-name').textContent = company;
+  const founded = document.getElementById('inp-founded').value;
+  const indLabel = document.getElementById('inp-industry');
+  const indText = indLabel.options[indLabel.selectedIndex]?.text || 'Services';
+  document.getElementById('r-meta').textContent = indText + (founded ? ' · Est. ' + founded : '');
+  document.getElementById('r-ars').textContent = ars;
+
+  ['exit','fin','ops','tail','moat'].forEach((k,i) => {
+    const val = [exit,fin,ops,tail,moat][i];
+    document.getElementById('sc-'+k).textContent = val;
+    setTimeout(() => document.getElementById('sb-'+k).style.width = val+'%', 100);
+  });
+
+  // Tier
+  const tierEl = document.getElementById('r-tier');
+  if (ars >= 75) { tierEl.textContent = 'Tier S'; tierEl.style.color = 'var(--amber)'; }
+  else if (ars >= 60) { tierEl.textContent = 'Tier A'; tierEl.style.color = '#4fd4bc'; }
+  else if (ars >= 45) { tierEl.textContent = 'Tier B'; tierEl.style.color = '#9e8ef8'; }
+  else { tierEl.textContent = 'Tier C'; tierEl.style.color = 'rgba(255,255,255,0.4)'; }
+
+  // Thesis
+  lastThesis = data.thesis.replace('Smith HVAC Services', company).replace('Green Valley Landscaping', company).replace('Premier Plumbing Co.', company).replace('Apex Roofing LLC', company);
+  document.getElementById('r-thesis').textContent = lastThesis;
+
+  // Signals
+  const posEl = document.getElementById('r-signals-pos');
+  posEl.innerHTML = data.pos.map(s => `<span class="signal-tag stag-positive">✓ ${s}</span>`).join('');
+  const riskEl = document.getElementById('r-signals-risk');
+  riskEl.innerHTML = data.risk.map(s => `<span class="signal-tag stag-risk">⚠ ${s}</span>`).join('');
+
+  // Hide loading, show result
+  document.getElementById('loading-state').classList.remove('visible');
+  // Reset loading steps
+  ['ls-1','ls-2','ls-3','ls-4'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('active','done');
+  });
+
+  document.getElementById('result-card').classList.add('visible');
+  document.getElementById('score-btn').disabled = false;
+
+  scoresLeft--;
+  document.getElementById('scores-remaining').textContent = scoresLeft;
+  if (scoresLeft <= 3) showToast(`${scoresLeft} free scores left — sign up for more!`);
+}
+
+function scoreAnother() {
+  document.getElementById('result-card').classList.remove('visible');
+  document.getElementById('empty-state').style.display = 'block';
+  document.getElementById('inp-company').value = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyThesis() {
+  navigator.clipboard.writeText(lastThesis).then(() => showToast('Thesis copied to clipboard', 'ok'));
+}
+</script>
+</body>
+</html>

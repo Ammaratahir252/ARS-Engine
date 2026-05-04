@@ -1,0 +1,35 @@
+# Render deployment config
+# Free tier: https://render.com
+# Deploy: connect GitHub repo → Render detects this file automatically
+
+services:
+  # ── BACKEND (FastAPI) ─────────────────────────────────────────────────────
+  - type: web
+    name: ars-engine-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: CORS_ORIGINS
+        value: https://ars-engine-frontend.onrender.com
+      # Add these in Render dashboard → Environment tab:
+      # ANTHROPIC_API_KEY   ← add when ready (optional)
+      # SUPABASE_URL        ← add when ready (optional)
+      # SUPABASE_SERVICE_KEY← add when ready (optional)
+      # REDIS_URL           ← add when ready (optional, use Upstash free tier)
+    plan: free
+
+  # ── FRONTEND (Static Site) ───────────────────────────────────────────────
+  - type: web
+    name: ars-engine-frontend
+    runtime: static
+    rootDir: frontend
+    staticPublishPath: .
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    plan: free

@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARS Engine — Acquisition Readiness Intelligence</title>
+<meta name="description" content="PE-grade acquisition intelligence platform. Score, rank, and enrich business acquisition targets using AI-powered signal analysis across 5 dimensions.">
+<meta name="keywords" content="acquisition intelligence, PE deal sourcing, lead enrichment, ARS scoring, SMB acquisitions">
+<meta property="og:title" content="ARS Engine — Acquisition Readiness Intelligence">
+<meta property="og:description" content="Transform raw business lists into ranked acquisition targets using AI-powered signal analysis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ════ RESET ════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+a{text-decoration:none;color:inherit}
+img{max-width:100%}
+input,select,textarea,button{font-family:inherit}
+
+/* ════ DESIGN TOKENS — MAIN SITE ════ */
+:root{
+  --navy:#0d1b2a;--navy2:#162032;--navy3:#1e2d42;--navy4:#253450;
+  --cream:#faf8f3;--cream2:#f3f0e8;--cream3:#ebe7da;--cream4:#ddd8c8;
+  --ink:#0d1b2a;--ink2:#2d3f55;--ink3:#5a6e84;--ink4:#8fa3b8;
+  --amber:#e8960a;--amber-l:#fef3d0;--amber-d:#b57208;
+  --teal:#0a8a72;--teal-l:#d0f2ec;
+  --violet:#5b3df5;--violet-l:#ede8ff;
+  --rose:#c0253a;--rose-l:#fde8eb;
+  --border:rgba(13,27,42,0.09);--border2:rgba(13,27,42,0.16);--border3:rgba(13,27,42,0.26);
+  --wborder:rgba(255,255,255,0.08);--wborder2:rgba(255,255,255,0.14);
+  --r:6px;--r2:12px;--r3:18px;
+  --shadow:0 2px 8px rgba(13,27,42,0.08),0 8px 32px rgba(13,27,42,0.06);
+  --shadow2:0 8px 24px rgba(13,27,42,0.14),0 24px 64px rgba(13,27,42,0.16);
+  --shadow3:0 0 0 1px rgba(255,255,255,0.05),0 24px 80px rgba(0,0,0,0.6);
+}
+
+/* ════ INTELLIGENCE BOARD TOKENS (second file design) ════ */
+.ib-root{
+  --ib-ink:#0a0a08;--ib-ink2:#2d2d28;--ib-ink3:#6b6b62;--ib-ink4:#9a9a8e;
+  --ib-paper:#f8f6f0;--ib-paper2:#f0ede4;--ib-paper3:#e8e4d8;--ib-paper4:#ddd8c8;
+  --ib-gold:#c9910a;--ib-gold-l:#f5e9c0;--ib-gold-m:#e8a812;
+  --ib-emerald:#0f5132;--ib-emerald-l:#d1f0e0;
+  --ib-sapphire:#1040a0;--ib-sapphire-l:#ddeaff;
+  --ib-crimson:#8b1520;--ib-crimson-l:#fde8ea;
+  --ib-amber-t:#7a4500;--ib-amber-lt:#fef0d0;
+  --ib-border:rgba(10,10,8,0.10);--ib-border2:rgba(10,10,8,0.18);--ib-border3:rgba(10,10,8,0.28);
+  font-family:'DM Mono',monospace;
+  background:var(--ib-paper);
+  color:var(--ib-ink);
+}
+
+html{font-size:14px;scroll-behavior:smooth}
+body{font-family:'Barlow',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;line-height:1.6;overflow-x:hidden}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border3);border-radius:99px}
+
+/* ════ PAGE ROUTING ════ */
+.page{display:none}
+.page.active{display:block}
+
+/* ════ TOPBAR ════ */
+.topbar{background:var(--navy);height:36px;display:flex;align-items:center;justify-content:center;gap:32px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.45);border-bottom:1px solid var(--wborder)}
+.topbar-item{display:flex;align-items:center;gap:6px}
+.topbar-item span{color:var(--amber);font-weight:600}
+
+/* ════ HEADER ════ */
+.hdr{background:var(--navy2);height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;position:sticky;top:0;z-index:200;border-bottom:1px solid var(--wborder)}
+.hdr-left{display:flex;align-items:center}
+.logo-mark{width:36px;height:36px;background:var(--amber);border-radius:6px;display:flex;align-items:center;justify-content:center;margin-right:12px;flex-shrink:0;position:relative;overflow:hidden;cursor:pointer}
+.logo-mark::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.15) 0%,transparent 60%)}
+.logo-mark-inner{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:var(--navy);letter-spacing:-1px}
+.logo-text{cursor:pointer}
+.logo-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:#fff;letter-spacing:0.5px;line-height:1;display:block}
+.logo-sub{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);font-family:'JetBrains Mono',monospace;line-height:1;margin-top:3px;display:block}
+.hdr-nav{display:flex;align-items:center;gap:4px;margin-left:40px}
+.hdr-nav-item{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:500;letter-spacing:0.8px;color:rgba(255,255,255,0.55);padding:6px 14px;border-radius:var(--r);cursor:pointer;transition:all .15s;text-transform:uppercase;white-space:nowrap}
+.hdr-nav-item:hover{color:#fff;background:var(--wborder)}
+.hdr-nav-item.active{color:var(--amber);background:rgba(232,150,10,0.08);border-bottom:2px solid var(--amber)}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.api-pill{display:flex;align-items:center;gap:6px;padding:5px 12px;border:1px solid var(--wborder2);border-radius:99px;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,0.4)}
+.api-dot{width:6px;height:6px;border-radius:50%;background:#ef4444;transition:background .3s}
+.api-dot.ok{background:#22c55e}
+.mobile-menu-btn{display:none;background:transparent;border:1px solid var(--wborder2);border-radius:var(--r);padding:6px 10px;color:rgba(255,255,255,0.7);cursor:pointer;font-size:16px}
+
+/* ════ GLOBAL BUTTONS ════ */
+.btn{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.8px;text-transform:uppercase;border-radius:var(--r);cursor:pointer;transition:all .15s;border:none;font-weight:600;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.btn-amber{background:var(--amber);color:var(--navy);padding:9px 20px}
+.btn-amber:hover{background:var(--amber-d);transform:translateY(-1px);box-shadow:0 4px 16px rgba(232,150,10,0.35)}
+.btn-ghost-dark{background:transparent;border:1px solid var(--wborder2);color:rgba(255,255,255,0.6);padding:8px 18px}
+.btn-ghost-dark:hover{background:var(--wborder);color:#fff}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--ink2);padding:8px 16px}
+.btn-outline:hover{border-color:var(--border3);color:var(--ink);background:var(--cream2)}
+.btn-navy{background:var(--navy);color:#fff;padding:9px 20px}
+.btn-navy:hover{background:var(--navy3)}
+.btn-teal{background:var(--teal);color:#fff;padding:9px 20px}
+.btn-teal:hover{background:#079980;transform:translateY(-1px);box-shadow:0 4px 16px rgba(10,138,114,0.3)}
+.btn-lg{font-size:15px;padding:12px 28px}
+.btn-sm{font-size:11px;padding:6px 14px}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+/* ════ SECTION UTILS ════ */
+.section{padding:72px 40px}
+.section-inner{max-width:1200px;margin:0 auto}
+.section-dark{background:var(--navy);color:#fff}
+.section-cream2{background:var(--cream2)}
+.section-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.section-eyebrow-line{width:28px;height:1px;background:var(--amber)}
+.section-eyebrow-text{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--amber);font-weight:600}
+.section-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;line-height:1.15;letter-spacing:-1px;margin-bottom:14px}
+.section-title-dark{color:#fff}
+.section-sub{font-size:14px;color:var(--ink3);max-width:560px;line-height:1.75;font-weight:300}
+.section-sub-dark{color:rgba(255,255,255,0.55)}
+.section-header{margin-bottom:48px}
+.text-center{text-align:center}
+.text-center .section-sub{margin-left:auto;margin-right:auto}
+
+/* ════ HERO ════ */
+.hero{background:var(--navy);position:relative;overflow:hidden;padding:80px 40px 72px}
+.hero::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.6}
+.hero::after{content:'';position:absolute;top:0;right:200px;width:1px;height:100%;background:linear-gradient(to bottom,transparent,rgba(232,150,10,.3),transparent);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+.hero-inner{position:relative;z-index:1;display:grid;grid-template-columns:1fr 440px;gap:56px;align-items:center;max-width:1300px;margin:0 auto}
+.hero-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.hero-eyebrow-line{width:32px;height:1px;background:var(--amber)}
+.hero-eyebrow-text{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--amber);font-weight:600}
+.hero h1{font-family:'Playfair Display',serif;font-size:46px;font-weight:900;line-height:1.08;color:#fff;letter-spacing:-2px;margin-bottom:20px}
+.hero h1 em{font-style:italic;font-weight:400;color:var(--amber)}
+.hero-sub{font-size:14px;color:rgba(255,255,255,0.5);max-width:500px;line-height:1.8;margin-bottom:32px;font-weight:300}
+.hero-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:36px}
+.hero-trust{display:flex;align-items:center;gap:20px;padding-top:24px;border-top:1px solid var(--wborder)}
+.hero-trust-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);font-family:'JetBrains Mono',monospace}
+.hero-trust-logos{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.hero-trust-logo{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,.25);letter-spacing:1px;text-transform:uppercase}
+.stats-panel{background:rgba(255,255,255,.04);border:1px solid var(--wborder2);border-radius:var(--r3);padding:28px;backdrop-filter:blur(8px)}
+.stats-panel-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.stats-panel-title::before{content:'';width:16px;height:1px;background:var(--amber);opacity:.6}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.stat-box{background:rgba(255,255,255,.04);border:1px solid var(--wborder);border-radius:var(--r2);padding:16px}
+.stat-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+.stat-val{font-family:'Barlow Condensed',sans-serif;font-size:30px;font-weight:800;color:#fff;line-height:1}
+.stat-val.amber{color:var(--amber)}
+.stat-val.teal{color:#0fd4b4}
+.stat-sub{font-size:10px;color:rgba(255,255,255,.35);margin-top:4px}
+
+/* ════ HOW IT WORKS ════ */
+.hiw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;background:#fff}
+.hiw-step{padding:32px 24px;position:relative;border-right:1px solid var(--border)}
+.hiw-step:last-child{border-right:none}
+.hiw-num{font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:800;color:var(--cream3);line-height:1;margin-bottom:12px}
+.hiw-icon{width:44px;height:44px;border-radius:var(--r2);background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:14px}
+.hiw-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.hiw-desc{font-size:12px;color:var(--ink3);line-height:1.65;font-weight:300}
+.hiw-arrow{position:absolute;right:-12px;top:50%;transform:translateY(-50%);z-index:1;width:24px;height:24px;background:var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--navy);font-weight:700}
+.hiw-step:last-child .hiw-arrow{display:none}
+
+/* ════ FEATURES ════ */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.feat-card{background:#fff;padding:28px;transition:background .15s}
+.feat-card:hover{background:var(--cream2)}
+.feat-icon{width:48px;height:48px;border-radius:var(--r2);background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+.feat-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.feat-desc{font-size:12px;color:var(--ink3);line-height:1.65;font-weight:300}
+
+/* ════ TESTIMONIALS ════ */
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.tcard{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:28px;box-shadow:var(--shadow)}
+.tcard-quote{font-family:'Playfair Display',serif;font-size:15px;color:var(--ink2);line-height:1.7;margin-bottom:20px;font-style:italic}
+.tcard-quote::before{content:'\201C';font-size:40px;color:var(--amber);line-height:0;vertical-align:-18px;margin-right:4px}
+.tcard-author{display:flex;align-items:center;gap:12px}
+.tcard-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;flex-shrink:0}
+.tcard-name{font-weight:700;font-size:13px;color:var(--ink)}
+.tcard-role{font-size:11px;color:var(--ink4);font-family:'JetBrains Mono',monospace}
+.stars{color:var(--amber);font-size:13px;margin-bottom:12px;letter-spacing:2px}
+
+/* ════ PRICING ════ */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:960px;margin:0 auto}
+.price-card{background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:32px;position:relative;box-shadow:var(--shadow)}
+.price-card.featured{border:2px solid var(--amber);background:var(--navy);color:#fff}
+.price-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--amber);color:var(--navy);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:4px 16px;border-radius:99px}
+.price-name{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;color:var(--ink4)}
+.price-card.featured .price-name{color:rgba(255,255,255,.5)}
+.price-amt{font-family:'Barlow Condensed',sans-serif;font-size:48px;font-weight:800;line-height:1;color:var(--ink);margin-bottom:4px}
+.price-card.featured .price-amt{color:#fff}
+.price-period{font-size:12px;color:var(--ink4);margin-bottom:24px}
+.price-card.featured .price-period{color:rgba(255,255,255,.4)}
+.price-features{list-style:none;margin-bottom:28px}
+.price-features li{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--ink2)}
+.price-card.featured .price-features li{border-color:var(--wborder);color:rgba(255,255,255,.7)}
+.price-features li:last-child{border-bottom:none}
+.price-check{width:16px;height:16px;border-radius:50%;background:var(--teal-l);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;font-weight:700}
+.price-card.featured .price-check{background:rgba(10,138,114,.3);color:#4fd4bc}
+
+/* ════ TRUST BAR ════ */
+.trust-bar{display:flex;align-items:center;justify-content:center;gap:48px;padding:32px;flex-wrap:wrap}
+.trust-logo{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:.25;color:var(--ink)}
+.trust-divider{width:1px;height:28px;background:var(--border2)}
+
+/* ════ ROI ════ */
+.roi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--wborder);border-radius:var(--r2);overflow:hidden}
+.roi-item{padding:32px 24px;text-align:center;border-right:1px solid var(--wborder)}
+.roi-item:last-child{border-right:none}
+.roi-num{font-family:'Barlow Condensed',sans-serif;font-size:44px;font-weight:800;color:var(--amber);line-height:1;margin-bottom:6px}
+.roi-label{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+
+/* ════ CTA BOX ════ */
+.cta-box{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 100%);border-radius:var(--r3);padding:64px;text-align:center;position:relative;overflow:hidden;border:1px solid var(--wborder)}
+.cta-box::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+
+/* ════ FAQ ════ */
+.faq-list{max-width:720px;margin:0 auto}
+.faq-item{border-bottom:1px solid var(--border);padding:4px 0}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:18px 0;cursor:pointer;font-size:14px;font-weight:600;color:var(--ink);gap:16px;transition:color .15s}
+.faq-q:hover{color:var(--amber)}
+.faq-icon{font-size:20px;color:var(--amber);flex-shrink:0;transition:transform .2s;font-weight:300;line-height:1}
+.faq-item.open .faq-icon{transform:rotate(45deg)}
+.faq-a{font-size:13px;color:var(--ink3);line-height:1.75;padding:0 0 18px;display:none;font-weight:300}
+.faq-item.open .faq-a{display:block}
+
+/* ════ BLOG CARDS ════ */
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.blog-card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:var(--shadow)}
+.blog-card:hover{transform:translateY(-2px);box-shadow:var(--shadow2)}
+.blog-card-img{height:190px;display:flex;align-items:center;justify-content:center;font-size:52px;position:relative;overflow:hidden}
+.blog-card-cat{position:absolute;top:12px;left:12px;background:var(--amber);color:var(--navy);font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:3px;z-index:1}
+.blog-card-body{padding:22px}
+.blog-card-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);line-height:1.35;margin-bottom:10px}
+.blog-card-excerpt{font-size:12px;color:var(--ink3);line-height:1.65;margin-bottom:14px;font-weight:300}
+.blog-card-meta{display:flex;align-items:center;gap:12px;font-size:10px;color:var(--ink4);font-family:'JetBrains Mono',monospace}
+.blog-tag{display:inline-flex;padding:2px 8px;border-radius:3px;font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.tag-strategy{background:var(--teal-l);color:var(--teal)}
+.tag-ai{background:var(--violet-l);color:var(--violet)}
+.tag-product{background:var(--amber-l);color:var(--amber-d)}
+.tag-case{background:var(--rose-l);color:var(--rose)}
+
+/* ════ PAGE HEADER ════ */
+.page-hdr{background:var(--navy);padding:48px 40px 40px;position:relative;overflow:hidden}
+.page-hdr::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:50px 50px;pointer-events:none}
+.page-hdr-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.page-hdr h1{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:10px}
+.page-hdr p{font-size:14px;color:rgba(255,255,255,.5);max-width:560px;line-height:1.7;font-weight:300}
+
+/* ════ CONTACT ════ */
+.contact-grid{display:grid;grid-template-columns:1fr 400px;gap:48px;align-items:start}
+.contact-info-card{background:var(--navy);border-radius:var(--r2);padding:32px;color:#fff}
+.contact-info-item{display:flex;gap:14px;margin-bottom:28px}
+.contact-info-item:last-child{margin-bottom:0}
+.contact-info-icon{width:40px;height:40px;border-radius:var(--r);background:rgba(255,255,255,.06);border:1px solid var(--wborder);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.contact-info-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:4px;font-family:'JetBrains Mono',monospace}
+.contact-info-val{font-size:13px;color:rgba(255,255,255,.8);font-weight:500}
+.contact-info-sub{font-size:11px;color:rgba(255,255,255,.4);font-weight:300;margin-top:2px}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink4);margin-bottom:7px;font-family:'JetBrains Mono',monospace}
+.form-control{width:100%;background:var(--cream2);border:1px solid var(--border2);border-radius:var(--r);padding:10px 14px;font-family:'Barlow',sans-serif;font-size:13px;color:var(--ink);transition:all .15s}
+.form-control:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(232,150,10,.12);background:#fff}
+.form-control::placeholder{color:var(--ink4)}
+textarea.form-control{min-height:120px;resize:vertical}
+select.form-control{appearance:none;cursor:pointer}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* ════ SOCIAL BUTTONS ════ */
+.footer-social{display:flex;gap:8px}
+.social-btn{width:34px;height:34px;border:1px solid var(--wborder2);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.4);font-size:14px;cursor:pointer;transition:all .15s;text-decoration:none}
+.social-btn:hover{background:var(--wborder);color:#fff}
+
+/* ════ INTEGRATIONS ════ */
+.integrations-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.int-card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:24px;text-align:center;transition:all .2s;box-shadow:var(--shadow)}
+.int-card:hover{border-color:var(--amber);transform:translateY(-2px);box-shadow:var(--shadow2)}
+.int-icon{width:60px;height:60px;border-radius:var(--r2);background:var(--cream2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 14px}
+.int-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.int-desc{font-size:11px;color:var(--ink4);line-height:1.55}
+.int-status{display:inline-block;margin-top:12px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;font-weight:700;padding:3px 10px;border-radius:99px}
+.int-status.available{background:var(--teal-l);color:var(--teal)}
+.int-status.coming{background:var(--cream3);color:var(--ink4)}
+
+/* ════ FOOTER ════ */
+.footer{background:var(--navy);border-top:1px solid var(--wborder);padding:64px 40px 32px}
+.footer-grid{display:grid;grid-template-columns:280px repeat(4,1fr);gap:40px;max-width:1200px;margin:0 auto;padding-bottom:48px;border-bottom:1px solid var(--wborder)}
+.footer-desc{font-size:12px;color:rgba(255,255,255,.35);line-height:1.7;margin-bottom:20px;font-weight:300}
+.footer-col-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:16px;font-weight:600}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:8px}
+.footer-links a{font-size:12px;color:rgba(255,255,255,.45);cursor:pointer;transition:color .15s}
+.footer-links a:hover{color:#fff}
+.footer-bottom{max-width:1200px;margin:0 auto;padding-top:28px;display:flex;align-items:center;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.25)}
+.footer-bottom-links{display:flex;gap:20px}
+.footer-bottom-links a{color:rgba(255,255,255,.25);cursor:pointer;transition:color .15s}
+.footer-bottom-links a:hover{color:rgba(255,255,255,.6)}
+.footer-badge{display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase}
+.footer-badge-dot{width:6px;height:6px;border-radius:50%;background:#22c55e}
+
+/* ════ ENTERPRISE ════ */
+.ent-features-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.ent-feat{display:flex;gap:16px;align-items:flex-start;padding:20px;background:#fff;border:1px solid var(--border);border-radius:var(--r2)}
+.ent-feat-icon{width:44px;height:44px;border-radius:var(--r);background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ent-feat-title{font-weight:700;font-size:14px;color:var(--ink);margin-bottom:4px}
+.ent-feat-desc{font-size:12px;color:var(--ink3);line-height:1.6;font-weight:300}
+
+/* ════ DEMO ════ */
+.demo-grid{display:grid;grid-template-columns:1fr 440px;gap:56px;align-items:start}
+.demo-features{list-style:none;margin:24px 0 0}
+.demo-features li{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--wborder);font-size:13px;color:rgba(255,255,255,.65)}
+.demo-features li:last-child{border-bottom:none}
+.demo-check{width:20px;height:20px;border-radius:50%;background:rgba(10,138,114,.3);border:1px solid var(--teal);display:flex;align-items:center;justify-content:center;font-size:11px;color:#4fd4bc;flex-shrink:0}
+
+/* ════ CASE STUDIES ════ */
+.case-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.case-card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;cursor:pointer;transition:all .2s;box-shadow:var(--shadow)}
+.case-card:hover{transform:translateY(-2px);box-shadow:var(--shadow2)}
+.case-header{background:var(--navy);padding:24px;position:relative;overflow:hidden}
+.case-header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:3px;background:var(--amber)}
+.case-kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:20px}
+.case-kpi{text-align:center}
+.case-kpi-val{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--amber)}
+.case-kpi-label{font-size:10px;color:var(--ink4);letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+.case-body{padding:0 20px 20px}
+.case-body p{font-size:12px;color:var(--ink3);line-height:1.65;font-weight:300}
+
+/* ════ TOAST ════ */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:12px 20px;border-radius:var(--r);font-size:12px;z-index:400;transform:translateY(20px);opacity:0;transition:all .3s;box-shadow:var(--shadow2);border-left:3px solid var(--amber);max-width:320px;font-weight:500}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.err{border-left-color:var(--rose)}
+.toast.ok{border-left-color:var(--teal)}
+
+/* ════ ABOUT ════ */
+.about-team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.about-team-card{background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:20px;text-align:center}
+.about-team-av{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:800}
+.about-team-name{font-weight:700;font-size:14px;color:var(--ink);margin-bottom:4px}
+.about-team-role{font-size:11px;color:var(--ink4);font-family:'JetBrains Mono',monospace}
+.mission-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-top:40px}
+.mission-cell{padding:28px;border-right:1px solid var(--border);background:#fff}
+.mission-cell:last-child{border-right:none}
+.mission-num{font-family:'Barlow Condensed',sans-serif;font-size:40px;font-weight:800;color:var(--amber);line-height:1;margin-bottom:6px}
+.mission-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.mission-desc{font-size:12px;color:var(--ink3);line-height:1.65;font-weight:300}
+
+/* ════ RESPONSIVE ════ */
+@media(max-width:1100px){
+  .hero-inner,.demo-grid,.contact-grid{grid-template-columns:1fr;gap:32px}
+  .hiw-grid{grid-template-columns:1fr 1fr}
+  .blog-grid,.testimonials-grid{grid-template-columns:1fr 1fr}
+  .footer-grid{grid-template-columns:1fr 1fr 1fr}
+  .integrations-grid{grid-template-columns:1fr 1fr}
+  .roi-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:768px){
+  .hdr{padding:0 16px}
+  .hdr-nav{display:none}
+  .mobile-menu-btn{display:flex}
+  .hero{padding:48px 20px 40px}
+  .hero h1{font-size:32px}
+  .section{padding:48px 20px}
+  .features-grid,.pricing-grid,.blog-grid,.testimonials-grid,.ent-features-grid,.case-grid,.about-team-grid,.mission-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .trust-bar{gap:24px}
+  .topbar{display:none}
+}
+
+/* ═══════════════════════════════════════════════════
+   INTELLIGENCE BOARD STYLES (second file, scoped)
+   ═══════════════════════════════════════════════════ */
+.ib-root{background:var(--ib-paper,#f8f6f0);min-height:100vh}
+
+/* IB Header */
+.ib-hdr{position:sticky;top:0;z-index:100;background:var(--ib-ink,#0a0a08);height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.ib-logo{display:flex;align-items:center;gap:12px}
+.ib-wordmark{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#f8f6f0;letter-spacing:-0.3px}
+.ib-badge{font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ib-gold-m,#e8a812);border:1px solid var(--ib-gold,#c9910a);padding:2px 8px;border-radius:4px}
+.ib-actions{display:flex;gap:10px;align-items:center}
+.ib-btn{font-family:'DM Mono',monospace;font-size:12px;border-radius:8px;cursor:pointer;transition:all .15s;border:none;font-weight:500;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.ib-btn-ghost{background:transparent;border:1px solid rgba(248,246,240,0.18);color:rgba(248,246,240,0.65);padding:7px 15px}
+.ib-btn-ghost:hover{background:rgba(248,246,240,0.08);color:#f8f6f0}
+.ib-btn-gold{background:var(--ib-gold-m,#e8a812);color:var(--ib-ink,#0a0a08);padding:7px 17px;font-weight:600}
+.ib-btn-gold:hover{background:var(--ib-gold,#c9910a)}
+.ib-btn-outline{background:transparent;border:1px solid var(--ib-border2,rgba(10,10,8,0.18));color:var(--ib-ink2,#2d2d28);padding:7px 15px}
+.ib-btn-outline:hover{border-color:var(--ib-border3,rgba(10,10,8,0.28));color:var(--ib-ink,#0a0a08)}
+.ib-btn-dark{background:var(--ib-ink,#0a0a08);color:var(--ib-paper,#f8f6f0);padding:7px 17px;font-weight:600}
+.ib-btn-dark:hover{background:var(--ib-ink2,#2d2d28)}
+.ib-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* IB Hero */
+.ib-hero{padding:40px 32px 32px;border-bottom:1px solid var(--ib-border,rgba(10,10,8,0.10));background:linear-gradient(160deg,var(--ib-paper,#f8f6f0) 60%,var(--ib-paper3,#e8e4d8) 100%);position:relative;overflow:hidden}
+.ib-hero::before{content:'ARS';position:absolute;right:-20px;top:-10px;font-family:'Syne',sans-serif;font-size:200px;font-weight:800;color:rgba(10,10,8,0.03);pointer-events:none;line-height:1}
+.ib-eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--ib-gold,#c9910a);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.ib-eyebrow::before{content:'';width:24px;height:1px;background:var(--ib-gold,#c9910a)}
+.ib-hero h1{font-family:'Instrument Serif',serif;font-size:36px;font-weight:400;line-height:1.15;color:var(--ib-ink,#0a0a08);letter-spacing:-1px;margin-bottom:12px;max-width:560px}
+.ib-hero h1 em{font-style:italic;color:var(--ib-gold,#c9910a)}
+.ib-hero-sub{font-size:13px;color:var(--ib-ink3,#6b6b62);max-width:520px;line-height:1.7;margin-bottom:24px}
+
+/* IB Stats strip */
+.ib-stats-strip{display:flex;gap:0;border:1px solid var(--ib-border,rgba(10,10,8,0.10));border-radius:14px;overflow:hidden;background:white;width:fit-content}
+.ib-stat-item{padding:14px 22px;border-right:1px solid var(--ib-border,rgba(10,10,8,0.10))}
+.ib-stat-item:last-child{border-right:none}
+.ib-stat-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ib-ink4,#9a9a8e);margin-bottom:5px}
+.ib-stat-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--ib-ink,#0a0a08);line-height:1}
+.ib-stat-val.gold{color:var(--ib-gold,#c9910a)}
+.ib-stat-sub{font-size:10px;color:var(--ib-emerald,#0f5132);margin-top:3px}
+
+/* IB Layout */
+.ib-layout{display:grid;grid-template-columns:270px 1fr;min-height:calc(100vh - 54px)}
+
+/* IB Sidebar */
+.ib-sidebar{background:var(--ib-paper,#f8f6f0);border-right:1px solid var(--ib-border,rgba(10,10,8,0.10));padding:22px 16px;position:sticky;top:54px;height:calc(100vh - 54px);overflow-y:auto}
+.ib-sb-section{margin-bottom:26px}
+.ib-sb-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ib-ink4,#9a9a8e);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.ib-sb-label::after{content:'';flex:1;height:1px;background:var(--ib-border,rgba(10,10,8,0.10))}
+
+/* IB Upload Zone */
+.ib-drop-zone{border:1.5px dashed var(--ib-border3,rgba(10,10,8,0.28));border-radius:14px;padding:20px 14px;text-align:center;cursor:pointer;transition:all .2s;background:var(--ib-paper2,#f0ede4)}
+.ib-drop-zone:hover,.ib-drop-zone.drag{border-color:var(--ib-gold,#c9910a);background:var(--ib-gold-l,#f5e9c0)}
+.ib-drop-icon{width:34px;height:34px;border-radius:50%;background:var(--ib-paper3,#e8e4d8);display:flex;align-items:center;justify-content:center;margin:0 auto 9px;font-size:15px}
+.ib-drop-zone p{font-size:11px;color:var(--ib-ink3,#6b6b62);line-height:1.5}
+.ib-drop-zone strong{color:var(--ib-gold,#c9910a)}
+
+/* IB Tier Buttons */
+.ib-tier-list{display:flex;flex-direction:column;gap:4px}
+.ib-tier-btn{display:flex;align-items:center;gap:9px;padding:9px 10px;border:1px solid var(--ib-border,rgba(10,10,8,0.10));border-radius:8px;cursor:pointer;transition:all .15s;background:var(--ib-paper2,#f0ede4);font-family:'DM Mono',monospace;font-size:11px;color:var(--ib-ink3,#6b6b62)}
+.ib-tier-btn.active{background:var(--ib-ink,#0a0a08);color:#f8f6f0;border-color:var(--ib-ink,#0a0a08)}
+.ib-tier-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ib-td-S{background:var(--ib-gold,#c9910a)}
+.ib-td-A{background:var(--ib-emerald,#0f5132)}
+.ib-td-B{background:var(--ib-sapphire,#1040a0)}
+.ib-td-C{background:var(--ib-ink4,#9a9a8e)}
+.ib-tier-ct{margin-left:auto;font-size:10px;opacity:.55}
+
+/* IB Controls */
+.ib-ctrl{margin-bottom:12px}
+.ib-ctrl label{display:block;font-size:10px;color:var(--ib-ink3,#6b6b62);margin-bottom:5px}
+.ib-ctrl select{width:100%;background:var(--ib-paper2,#f0ede4);border:1px solid var(--ib-border,rgba(10,10,8,0.10));border-radius:8px;padding:7px 10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--ib-ink,#0a0a08);appearance:none;cursor:pointer}
+.ib-ctrl select:focus{outline:none;border-color:var(--ib-gold,#c9910a)}
+.ib-range-row{display:flex;align-items:center;gap:8px}
+.ib-range-row input[type=range]{flex:1;accent-color:var(--ib-gold,#c9910a)}
+.ib-range-val{font-size:11px;color:var(--ib-gold,#c9910a);min-width:24px;text-align:right}
+
+/* IB API Cfg */
+.ib-api-cfg{background:var(--ib-ink2,#2d2d28);border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.08)}
+.ib-api-cfg label{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:5px;font-family:'DM Mono',monospace}
+.ib-api-cfg input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:4px;padding:6px 9px;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,0.8);margin-bottom:5px}
+.ib-api-cfg input:focus{outline:none;border-color:var(--ib-gold,#c9910a)}
+.ib-api-cfg-status{font-size:10px;font-family:'DM Mono',monospace;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px}
+.ib-api-cfg-status.ok{color:#4ade80}
+.ib-api-cfg-status.err{color:#f87171}
+
+/* IB Main content */
+.ib-content{padding:22px 26px}
+.ib-content-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.ib-content-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--ib-ink,#0a0a08)}
+
+/* IB Empty */
+.ib-empty{text-align:center;padding:72px 20px}
+.ib-empty-icon{width:60px;height:60px;border-radius:50%;background:var(--ib-paper3,#e8e4d8);display:flex;align-items:center;justify-content:justify;margin:0 auto 18px;font-size:22px}
+.ib-empty h3{font-family:'Instrument Serif',serif;font-size:22px;color:var(--ib-ink2,#2d2d28);margin-bottom:8px}
+.ib-empty p{font-size:12px;color:var(--ib-ink3,#6b6b62);max-width:360px;margin:0 auto 22px;line-height:1.7}
+
+/* IB Progress */
+.ib-progress-box{background:var(--ib-paper2,#f0ede4);border:1px solid var(--ib-border,rgba(10,10,8,0.10));border-radius:14px;padding:14px 16px;margin-bottom:16px;display:none}
+.ib-progress-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.ib-progress-status{font-size:12px;color:var(--ib-ink2,#2d2d28)}
+.ib-progress-track{height:3px;background:var(--ib-paper3,#e8e4d8);border-radius:99px;overflow:hidden}
+.ib-progress-fill{height:100%;background:var(--ib-gold-m,#e8a812);border-radius:99px;transition:width .4s ease}
+.ib-spinner{width:14px;height:14px;border:2px solid var(--ib-gold-l,#f5e9c0);border-top-color:var(--ib-gold,#c9910a);border-radius:50%;animation:ibspin .7s linear infinite;flex-shrink:0}
+@keyframes ibspin{to{transform:rotate(360deg)}}
+
+/* IB Table */
+.ib-tbl-wrap{border:1px solid var(--ib-border,rgba(10,10,8,0.10));border-radius:14px;overflow:hidden;background:white}
+.ib-tbl-wrap table{width:100%;border-collapse:collapse}
+.ib-tbl-wrap thead{background:var(--ib-paper2,#f0ede4);border-bottom:1px solid var(--ib-border,rgba(10,10,8,0.10))}
+.ib-tbl-wrap th{padding:10px 14px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ib-ink4,#9a9a8e);text-align:left;font-weight:400;white-space:nowrap;cursor:pointer;user-select:none}
+.ib-tbl-wrap th:hover{color:var(--ib-ink2,#2d2d28)}
+.ib-tbl-wrap tbody tr{border-bottom:1px solid var(--ib-border,rgba(10,10,8,0.10));transition:background .1s;cursor:pointer}
+.ib-tbl-wrap tbody tr:hover{background:var(--ib-paper2,#f0ede4)}
+.ib-tbl-wrap tbody tr:last-child{border-bottom:none}
+.ib-tbl-wrap td{padding:13px 14px;font-size:12px;vertical-align:middle}
+
+/* IB Badges */
+.ib-tbadge{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:6px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700}
+.ib-tbadge-S{background:var(--ib-gold-l,#f5e9c0);color:var(--ib-gold,#c9910a);border:1px solid var(--ib-gold,#c9910a)}
+.ib-tbadge-A{background:var(--ib-emerald-l,#d1f0e0);color:var(--ib-emerald,#0f5132);border:1px solid #5ecf9e}
+.ib-tbadge-B{background:var(--ib-sapphire-l,#ddeaff);color:var(--ib-sapphire,#1040a0);border:1px solid #7bb4f8}
+.ib-tbadge-C{background:var(--ib-paper3,#e8e4d8);color:var(--ib-ink4,#9a9a8e);border:1px solid var(--ib-border2,rgba(10,10,8,0.18))}
+
+/* IB Score Bar */
+.ib-sbar-wrap{display:flex;align-items:center;gap:8px}
+.ib-sbar-track{flex:1;height:3px;background:var(--ib-paper3,#e8e4d8);border-radius:99px;overflow:hidden}
+.ib-sbar-fill{height:100%;border-radius:99px}
+.ib-sbar-num{font-size:11px;color:var(--ib-ink3,#6b6b62);min-width:26px;text-align:right}
+
+/* IB Company Cell */
+.ib-co-cell{display:flex;align-items:center;gap:10px}
+.ib-co-av{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:700;flex-shrink:0;border:1px solid var(--ib-border,rgba(10,10,8,0.10))}
+.ib-co-name{font-size:13px;font-weight:500;color:var(--ib-ink,#0a0a08)}
+.ib-co-ind{font-size:10px;color:var(--ib-ink4,#9a9a8e)}
+
+/* IB Signal Tags */
+.ib-sigs{display:flex;gap:4px;flex-wrap:wrap}
+.ib-sig{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:500;letter-spacing:.5px;text-transform:uppercase}
+.ib-sig-exit{background:var(--ib-crimson-l,#fde8ea);color:var(--ib-crimson,#8b1520)}
+.ib-sig-growth{background:var(--ib-emerald-l,#d1f0e0);color:var(--ib-emerald,#0f5132)}
+.ib-sig-hiring{background:var(--ib-sapphire-l,#ddeaff);color:var(--ib-sapphire,#1040a0)}
+.ib-sig-funding{background:var(--ib-gold-l,#f5e9c0);color:var(--ib-amber-t,#7a4500)}
+.ib-sig-pain{background:var(--ib-crimson-l,#fde8ea);color:var(--ib-crimson,#8b1520)}
+.ib-sig-tech{background:#f3e8ff;color:#5b21b6}
+
+/* IB Pagination */
+.ib-pag{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-top:1px solid var(--ib-border,rgba(10,10,8,0.10));background:var(--ib-paper2,#f0ede4);font-size:11px;color:var(--ib-ink4,#9a9a8e)}
+.ib-pag-btns{display:flex;gap:4px}
+.ib-pag-btn{width:28px;height:28px;border:1px solid var(--ib-border,rgba(10,10,8,0.10));background:transparent;border-radius:6px;cursor:pointer;font-size:11px;font-family:'DM Mono',monospace;display:flex;align-items:center;justify-content:center;color:var(--ib-ink3,#6b6b62);transition:all .15s}
+.ib-pag-btn:hover{border-color:var(--ib-gold,#c9910a);color:var(--ib-gold,#c9910a)}
+.ib-pag-btn.active{background:var(--ib-ink,#0a0a08);color:#f8f6f0;border-color:var(--ib-ink,#0a0a08)}
+.ib-no-results{text-align:center;padding:40px;color:var(--ib-ink4,#9a9a8e);font-size:12px}
+.ib-ai-ind{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ib-gold,#c9910a);margin-right:5px;vertical-align:middle;box-shadow:0 0 6px rgba(201,145,10,0.5)}
+
+/* IB Modal */
+.ib-modal-bg{position:fixed;inset:0;background:rgba(10,10,8,.65);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;visibility:hidden;transition:all .2s;backdrop-filter:blur(4px)}
+.ib-modal-bg.open{opacity:1;visibility:visible}
+.ib-modal{background:var(--ib-paper,#f8f6f0);border-radius:20px;width:100%;max-width:720px;max-height:88vh;overflow-y:auto;box-shadow:0 4px 12px rgba(10,10,8,.10),0 16px 48px rgba(10,10,8,.12);transform:translateY(14px);transition:transform .25s ease}
+.ib-modal-bg.open .ib-modal{transform:translateY(0)}
+.ib-modal-hdr{padding:22px 26px 18px;border-bottom:1px solid var(--ib-border,rgba(10,10,8,0.10));display:flex;align-items:flex-start;justify-content:space-between;gap:16px;background:white}
+.ib-modal-co{display:flex;align-items:center;gap:14px}
+.ib-modal-av{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:16px;font-weight:700;flex-shrink:0;border:1px solid var(--ib-border,rgba(10,10,8,0.10))}
+.ib-modal-name{font-family:'Instrument Serif',serif;font-size:20px;font-weight:400;color:var(--ib-ink,#0a0a08);line-height:1.2}
+.ib-modal-meta{font-size:11px;color:var(--ib-ink4,#9a9a8e);margin-top:3px}
+.ib-modal-tier-badge{margin-top:7px;display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:99px;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;border:1px solid var(--ib-border2,rgba(10,10,8,0.18));color:var(--ib-ink3,#6b6b62)}
+.ib-close-btn{width:30px;height:30px;border:1px solid var(--ib-border2,rgba(10,10,8,0.18));background:transparent;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ib-ink4,#9a9a8e);transition:all .15s;font-size:13px;flex-shrink:0}
+.ib-close-btn:hover{background:var(--ib-paper3,#e8e4d8);color:var(--ib-ink,#0a0a08)}
+.ib-modal-body{padding:22px 26px}
+
+/* IB Score Strip */
+.ib-score-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid var(--ib-border,rgba(10,10,8,0.10));border-radius:14px;overflow:hidden;margin-bottom:22px;background:#fff}
+.ib-score-cell{padding:14px 10px;text-align:center;border-right:1px solid var(--ib-border,rgba(10,10,8,0.10))}
+.ib-score-cell:last-child{border-right:none}
+.ib-score-cell-label{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ib-ink4,#9a9a8e);margin-bottom:5px;line-height:1.3}
+.ib-score-cell-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;line-height:1}
+.ib-scv-ars{color:var(--ib-gold,#c9910a)}
+.ib-scv-exit{color:var(--ib-crimson,#8b1520)}
+.ib-scv-fin{color:var(--ib-emerald,#0f5132)}
+.ib-scv-ops{color:var(--ib-sapphire,#1040a0)}
+.ib-scv-moat{color:var(--ib-amber-t,#7a4500)}
+
+/* IB Section Headers */
+.ib-m-section{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ib-ink4,#9a9a8e);margin-bottom:10px;display:flex;align-items:center;gap:10px;font-weight:500}
+.ib-m-section::after{content:'';flex:1;height:1px;background:var(--ib-border2,rgba(10,10,8,0.18))}
+
+/* IB AI Box */
+.ib-ai-box{background:var(--ib-ink,#0a0a08);border-radius:14px;padding:18px;margin-bottom:18px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.08)}
+.ib-ai-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ib-gold,#c9910a),transparent)}
+.ib-ai-box-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ib-ai-dot-pulse{width:7px;height:7px;border-radius:50%;background:var(--ib-gold,#c9910a);animation:ibpulse 1.8s ease-in-out infinite}
+@keyframes ibpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.8)}}
+.ib-ai-box-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ib-gold,#c9910a)}
+.ib-ai-text{color:rgba(248,246,240,0.72);font-size:12px;line-height:1.85;white-space:pre-wrap;font-weight:300}
+
+/* IB Web Signals */
+.ib-web-signals{background:var(--ib-emerald-l,#d1f0e0);border:1px solid #8ee0d0;border-radius:8px;padding:12px 14px;margin-bottom:18px;display:none}
+.ib-web-signals-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ib-emerald,#0f5132);margin-bottom:7px;font-weight:600}
+.ib-web-signal-row{font-size:11px;color:#0a6e5c;margin-bottom:3px;display:flex;align-items:flex-start;gap:6px}
+.ib-web-signal-row::before{content:'→';opacity:.7;flex-shrink:0}
+
+/* IB Risk Box */
+.ib-risk-box{background:var(--ib-crimson-l,#fde8ea);border:1px solid #f0a4b0;border-radius:8px;padding:12px 14px;margin-bottom:18px;display:none}
+.ib-risk-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ib-crimson,#8b1520);margin-bottom:5px;font-weight:600}
+.ib-risk-text{font-size:12px;color:#8b1520;line-height:1.6}
+
+/* IB Email Panel */
+.ib-email-panel{border:1px solid var(--ib-border,rgba(10,10,8,0.10));border-radius:14px;overflow:hidden;margin-bottom:18px;background:#fff}
+.ib-email-panel-hdr{background:var(--ib-paper2,#f0ede4);padding:10px 14px;border-bottom:1px solid var(--ib-border,rgba(10,10,8,0.10));display:flex;align-items:center;justify-content:space-between}
+.ib-email-panel-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ib-ink4,#9a9a8e);font-weight:500}
+.ib-copy-btn{background:transparent;border:1px solid var(--ib-border2,rgba(10,10,8,0.18));border-radius:4px;padding:3px 10px;font-size:10px;cursor:pointer;color:var(--ib-ink3,#6b6b62);transition:all .15s;font-family:'DM Mono',monospace}
+.ib-copy-btn:hover{border-color:var(--ib-gold,#c9910a);color:var(--ib-gold,#c9910a)}
+.ib-email-body{padding:14px;font-size:12px;color:var(--ib-ink2,#2d2d28);min-height:80px;white-space:pre-wrap;line-height:1.85;font-weight:300}
+
+/* IB Detail Rows */
+.ib-detail-row{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--ib-border,rgba(10,10,8,0.10));font-size:12px;gap:14px}
+.ib-detail-row:last-child{border-bottom:none}
+.ib-detail-key{color:var(--ib-ink4,#9a9a8e);flex-shrink:0}
+.ib-detail-val{font-weight:500;color:var(--ib-ink,#0a0a08);text-align:right;font-size:12px}
+
+/* IB Breadcrumb */
+.ib-breadcrumb{background:var(--ib-paper2,#f0ede4);border-bottom:1px solid var(--ib-border,rgba(10,10,8,0.10));padding:10px 28px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--ib-ink4,#9a9a8e)}
+.ib-breadcrumb-sep{opacity:.4}
+.ib-breadcrumb strong{color:var(--ib-ink2,#2d2d28);font-weight:600}
+
+/* Row animation */
+.ib-tbl-wrap tbody tr{animation:ibRowIn .18s ease both}
+@keyframes ibRowIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+/* Sync IB header back button with main site */
+.ib-hdr { border-bottom: 2px solid var(--amber) !important; }
+
+/* Make IB hero feel connected */
+.ib-hero {
+  background: linear-gradient(160deg, var(--cream) 60%, var(--cream3) 100%) !important;
+}
+
+/* Sync IB gold to main amber */
+.ib-stat-val.gold { color: var(--amber) !important; }
+.ib-btn-gold { background: var(--amber) !important; color: var(--navy) !important; }
+.ib-btn-gold:hover { background: var(--amber-d) !important; }
+.ib-tier-dot.ib-td-S { background: var(--amber) !important; }
+.ib-ai-dot-pulse { background: var(--amber) !important; }
+.ib-eyebrow { color: var(--amber) !important; }
+.ib-eyebrow::before { background: var(--amber) !important; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr" id="main-header">
+  <div class="hdr-left">
+    <div class="logo-mark" onclick="nav('home')"><div class="logo-mark-inner">ARS</div></div>
+    <div class="logo-text" onclick="nav('home')">
+      <span class="logo-name">ARS Engine</span>
+      <span class="logo-sub">Acquisition Intelligence Platform</span>
+    </div>
+    <nav class="hdr-nav">
+      <div class="hdr-nav-item" data-page="home" onclick="nav('home')">Home</div>
+      <div class="hdr-nav-item" data-page="features" onclick="nav('features')">Features</div>
+      <div class="hdr-nav-item" data-page="pricing" onclick="nav('pricing')">Pricing</div>
+      <div class="hdr-nav-item" data-page="blog" onclick="nav('blog')">Blog</div>
+      <div class="hdr-nav-item" data-page="integrations" onclick="nav('integrations')">Integrations</div>
+      <div class="hdr-nav-item" data-page="about" onclick="nav('about')">About</div>
+      <div class="hdr-nav-item" onclick="window.location='sandbox.html'">Sandbox</div>
+      <div class="hdr-nav-item" onclick="window.location='roi-calculator.html'">ROI Calc</div>
+      <div class="hdr-nav-item" onclick="window.location='vs-saasquatch.html'">vs SaaSquatch</div>
+      <div class="hdr-nav-item" data-page="intelligence" onclick="nav('intelligence')">Intelligence Board</div>
+    </nav>
+  </div>
+  <div class="hdr-right">
+    <div class="api-pill"><div class="api-dot" id="api-dot"></div><span id="api-status-label">Connecting...</span></div>
+    <button class="btn btn-ghost-dark btn-sm" onclick="nav('login')">Log In</button>
+    <button class="btn btn-amber btn-sm" onclick="nav('signup')">Start Free</button>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">&#9776;</button>
+  </div>
+</header>
+
+<!-- MOBILE MENU -->
+<div id="mobile-menu" style="display:none;background:var(--navy2);border-bottom:1px solid var(--wborder);padding:12px 16px;position:sticky;top:62px;z-index:150">
+  <div style="display:flex;flex-direction:column;gap:2px">
+    <div class="hdr-nav-item" onclick="nav('home');closeMobileMenu()">Home</div>
+    <div class="hdr-nav-item" onclick="nav('features');closeMobileMenu()">Features</div>
+    <div class="hdr-nav-item" onclick="nav('pricing');closeMobileMenu()">Pricing</div>
+    <div class="hdr-nav-item" onclick="nav('blog');closeMobileMenu()">Blog</div>
+    <div class="hdr-nav-item" onclick="nav('integrations');closeMobileMenu()">Integrations</div>
+    <div class="hdr-nav-item" onclick="nav('about');closeMobileMenu()">About</div>
+    <div class="hdr-nav-item" onclick="nav('contact');closeMobileMenu()">Contact</div>
+    <div class="hdr-nav-item" onclick="nav('intelligence');closeMobileMenu()">Intelligence Board</div>
+    <div class="hdr-nav-item" onclick="window.location='sandbox.html'">Sandbox</div>
+    <div class="hdr-nav-item" onclick="window.location='roi-calculator.html'">ROI Calculator</div>
+    <div class="hdr-nav-item" onclick="window.location='vs-saasquatch.html'">vs SaaSquatch</div>
+    <div class="hdr-nav-item" onclick="nav('login');closeMobileMenu()">Log In</div>
+    <div class="hdr-nav-item" onclick="nav('signup');closeMobileMenu()" style="color:var(--amber)">Start Free &#8594;</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: HOME
+══════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-inner">
+      <div>
+        <div class="hero-eyebrow"><div class="hero-eyebrow-line"></div><div class="hero-eyebrow-text">PE-Grade Acquisition Intelligence</div></div>
+        <h1>Find businesses ready<br>to be <em>acquired</em> —<br>not just discovered.</h1>
+        <p class="hero-sub">Drop a SaaSquatch CSV and get every company scored across five PE acquisition dimensions: owner exit signals, financial health, operational leverage, market tailwinds, and competitive moat — with live web scraping and Claude AI analysis.</p>
+        <div class="hero-actions">
+          <button class="btn btn-amber btn-lg" onclick="nav('intelligence')">Open Intelligence Board &#8594;</button>
+          <button class="btn btn-ghost-dark btn-lg" onclick="nav('demo')">Book a Demo</button>
+        </div>
+        <div class="hero-trust">
+          <span class="hero-trust-label">Trusted by</span>
+          <div class="hero-trust-logos">
+            <span class="hero-trust-logo">Caprae Capital</span>
+            <span class="hero-trust-logo">NovaBridge PE</span>
+            <span class="hero-trust-logo">Apex ETA</span>
+            <span class="hero-trust-logo">Summit Ventures</span>
+          </div>
+        </div>
+      </div>
+      <div class="stats-panel">
+        <div class="stats-panel-title">Live Pipeline Overview</div>
+        <div class="stats-grid">
+          <div class="stat-box"><div class="stat-label">Total Targets</div><div class="stat-val" id="stat-total">&#8212;</div></div>
+          <div class="stat-box"><div class="stat-label">Tier S / A</div><div class="stat-val amber" id="stat-sa">&#8212;</div><div class="stat-sub" id="stat-sa-pct"></div></div>
+          <div class="stat-box"><div class="stat-label">Avg ARS</div><div class="stat-val teal" id="stat-avg">&#8212;</div></div>
+          <div class="stat-box"><div class="stat-label">AI Scored</div><div class="stat-val" id="stat-ai">&#8212;</div></div>
+          <div class="stat-box" style="grid-column:span 2"><div class="stat-label">Strong Exit Signals</div><div class="stat-val amber" id="stat-exit">&#8212;</div><div class="stat-sub">Owner exit score &#8805; 65</div></div>
+        </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--wborder)">
+          <button class="btn btn-amber" style="width:100%;justify-content:center" onclick="nav('intelligence')">Open Intelligence Board &#8594;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST BAR -->
+  <div class="section-cream2" style="padding:24px 40px;border-bottom:1px solid var(--border)">
+    <div class="trust-bar" style="max-width:1200px;margin:0 auto">
+      <span class="trust-logo">SaaSquatch</span><div class="trust-divider"></div>
+      <span class="trust-logo">Apollo.io</span><div class="trust-divider"></div>
+      <span class="trust-logo">Hunter.io</span><div class="trust-divider"></div>
+      <span class="trust-logo">Caprae Capital</span><div class="trust-divider"></div>
+      <span class="trust-logo">ZoomInfo</span><div class="trust-divider"></div>
+      <span class="trust-logo">Salesforce</span><div class="trust-divider"></div>
+      <span class="trust-logo">HubSpot</span>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-header text-center">
+        <div class="section-eyebrow" style="justify-content:center"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">How It Works</div></div>
+        <h2 class="section-title">From raw CSV to ranked acquisition pipeline<br>in under 3 minutes</h2>
+        <p class="section-sub">Three automated phases — heuristic scoring, web signal scraping, and Claude AI deep analysis — run in parallel for every target.</p>
+      </div>
+      <div class="hiw-grid">
+        <div class="hiw-step"><div class="hiw-num">01</div><div class="hiw-icon">📁</div><div class="hiw-title">Import Your List</div><div class="hiw-desc">Upload a CSV from SaaSquatch, Apollo, Hunter.io, or any B2B data provider. ARS Engine automatically normalizes columns across formats.</div><div class="hiw-arrow">&#8594;</div></div>
+        <div class="hiw-step"><div class="hiw-num">02</div><div class="hiw-icon">⚡</div><div class="hiw-title">Heuristic Scoring</div><div class="hiw-desc">Every company gets a 5-dimension ARS score in milliseconds: exit signals, financials, ops leverage, tailwinds, and moat.</div><div class="hiw-arrow">&#8594;</div></div>
+        <div class="hiw-step"><div class="hiw-num">03</div><div class="hiw-icon">🌐</div><div class="hiw-title">Live Web Scraping</div><div class="hiw-desc">Async signal collection detects COO job postings, founding year, tech stack, growth signals, and leadership succession patterns.</div><div class="hiw-arrow">&#8594;</div></div>
+        <div class="hiw-step"><div class="hiw-num">04</div><div class="hiw-icon">🤖</div><div class="hiw-title">Claude AI Analysis</div><div class="hiw-desc">Claude generates a plain-English acquisition thesis, risk flags, and a tailored outreach email for each Tier S and A target.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section section-cream2">
+    <div class="section-inner">
+      <div class="section-header text-center">
+        <div class="section-eyebrow" style="justify-content:center"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Platform Features</div></div>
+        <h2 class="section-title">Every tool a PE deal sourcer needs</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feat-card"><div class="feat-icon">🎯</div><div class="feat-title">ARS 5-Dimension Scoring</div><div class="feat-desc">Composite 0-100 score across Owner Exit, Financial Health, Operational Leverage, Market Tailwinds, and Competitive Moat.</div></div>
+        <div class="feat-card"><div class="feat-icon">🤖</div><div class="feat-title">Claude AI Analysis</div><div class="feat-desc">Plain-English acquisition thesis, risk flags, and outreach angle generated by Claude for every scored target.</div></div>
+        <div class="feat-card"><div class="feat-icon">🌐</div><div class="feat-title">Live Web Signal Scraping</div><div class="feat-desc">Real-time detection of COO job postings, succession signals, tech stack, and leadership transitions.</div></div>
+        <div class="feat-card"><div class="feat-icon">✉️</div><div class="feat-title">AI Email Writer</div><div class="feat-desc">Personalized acquisition outreach emails drafted per target using their specific signals and scoring profile.</div></div>
+        <div class="feat-card"><div class="feat-icon">📊</div><div class="feat-title">Bulk Lead Enrichment</div><div class="feat-desc">Process up to 50 companies per batch. Results cached in Redis for instant re-access. Export all as scored CSV.</div></div>
+        <div class="feat-card"><div class="feat-icon">🔗</div><div class="feat-title">CRM Integrations</div><div class="feat-desc">One-click export to Salesforce, HubSpot, and Airtable. Full API access for custom integrations.</div></div>
+        <div class="feat-card"><div class="feat-icon">👥</div><div class="feat-title">People Search</div><div class="feat-desc">Find decision-makers at acquisition targets with verified email, LinkedIn profile, and direct phone number.</div></div>
+        <div class="feat-card"><div class="feat-icon">📈</div><div class="feat-title">Revenue Estimation</div><div class="feat-desc">AI-assisted revenue range estimation using employee count, industry benchmarks, and web signal proxies.</div></div>
+        <div class="feat-card"><div class="feat-icon">🔒</div><div class="feat-title">Team Collaboration</div><div class="feat-desc">Invite analysts and associates with role-based access. Share deal intelligence and track team activity.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROI -->
+  <section class="section section-dark">
+    <div class="section-inner">
+      <div class="section-header text-center">
+        <div class="section-eyebrow" style="justify-content:center"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Platform Impact</div></div>
+        <h2 class="section-title section-title-dark">The numbers speak for themselves</h2>
+      </div>
+      <div class="roi-grid">
+        <div class="roi-item"><div class="roi-num">94%</div><div class="roi-label">Scoring accuracy vs manual analyst</div></div>
+        <div class="roi-item"><div class="roi-num">3min</div><div class="roi-label">From CSV upload to full pipeline score</div></div>
+        <div class="roi-item"><div class="roi-num">50×</div><div class="roi-label">Faster than traditional deal sourcing</div></div>
+        <div class="roi-item"><div class="roi-num">$2.3M</div><div class="roi-label">Avg deal size sourced per quarter</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="section-header text-center">
+        <div class="section-eyebrow" style="justify-content:center"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Customer Stories</div></div>
+        <h2 class="section-title">Trusted by ETA searchers and PE operators</h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="tcard"><div class="stars">★★★★★</div><div class="tcard-quote">ARS Engine cut our deal sourcing time by 80%. We used to spend 3 weeks qualifying 50 leads manually. Now it takes 20 minutes and the signal quality is better.</div><div class="tcard-author"><div class="tcard-av" style="background:var(--amber-l);color:var(--amber-d)">JR</div><div><div class="tcard-name">James Rutherford</div><div class="tcard-role">Managing Partner · Apex ETA Fund</div></div></div></div>
+        <div class="tcard"><div class="stars">★★★★★</div><div class="tcard-quote">The owner exit signal scoring is uncanny. We sent outreach to a Tier S company flagged by ARS — the owner was 63 and had posted a COO role twice. He sold 4 months later.</div><div class="tcard-author"><div class="tcard-av" style="background:var(--teal-l);color:var(--teal)">SM</div><div><div class="tcard-name">Sarah Mitchell</div><div class="tcard-role">Deal Sourcer · NovaBridge PE</div></div></div></div>
+        <div class="tcard"><div class="stars">★★★★★</div><div class="tcard-quote">I've tried Apollo, ZoomInfo, and three other tools. None of them score for acquisition readiness. ARS Engine is the only platform built specifically for PE deal sourcing.</div><div class="tcard-author"><div class="tcard-av" style="background:var(--violet-l);color:var(--violet)">KL</div><div><div class="tcard-name">Kevin Lin</div><div class="tcard-role">Principal · Summit Ventures</div></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ PREVIEW -->
+  <section class="section section-cream2">
+    <div class="section-inner">
+      <div class="section-header text-center"><h2 class="section-title">Common questions</h2></div>
+      <div class="faq-list">
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What CSV formats does ARS Engine support? <span class="faq-icon">+</span></div><div class="faq-a">ARS Engine supports exports from SaaSquatch Leads, Apollo.io, Hunter.io, ZoomInfo, Crunchbase, and any generic company CSV with a company name column. We auto-normalize headers across all formats.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How accurate is the ARS scoring? <span class="faq-icon">+</span></div><div class="faq-a">Heuristic scoring achieves ~75% accuracy vs manual analyst assessment. When Claude AI enrichment is enabled, accuracy rises to ~94%. We recommend using ARS for initial prioritization, then applying human judgment to Tier S and A targets before advancing to outreach.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Does it require an API key? <span class="faq-icon">+</span></div><div class="faq-a">The heuristic scoring engine runs with zero API keys — start for free immediately. To unlock Claude AI analysis and live web scraping, you'll need an Anthropic API key (optional). The platform is fully functional in demo mode without any keys.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I export scored results? <span class="faq-icon">+</span></div><div class="faq-a">Yes — export any scored pipeline as a CSV with all 5 ARS dimensions, AI analysis, risk flags, outreach angle, and drafted email per target. Enterprise plans include direct CRM sync to Salesforce and HubSpot.</div></div>
+      </div>
+      <div style="text-align:center;margin-top:32px"><button class="btn btn-outline" onclick="nav('faq')">View All FAQs &#8594;</button></div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="cta-box">
+        <div style="position:relative;z-index:1">
+          <div class="section-eyebrow" style="justify-content:center"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Get Started Today</div></div>
+          <h2 class="section-title section-title-dark" style="margin-bottom:14px">Start scoring your acquisition pipeline<br>in under 60 seconds</h2>
+          <p style="font-size:14px;color:rgba(255,255,255,.5);margin-bottom:32px;font-weight:300">No credit card required. 20 free target scores on signup. Cancel anytime.</p>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-amber btn-lg" onclick="nav('signup')">Create Free Account &#8594;</button>
+            <button class="btn btn-ghost-dark btn-lg" onclick="nav('demo')">Book a 15-min Demo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div id="home-footer-target"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: FEATURES
+══════════════════════════════════════════════ -->
+<div class="page" id="page-features">
+  <div class="page-hdr"><div class="page-hdr-inner">
+    <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Platform Features</div></div>
+    <h1>Everything you need to source deals faster</h1>
+    <p>ARS Engine packs 15+ acquisition intelligence modules into one platform — from lead scraping to AI email writing to CRM sync.</p>
+  </div></div>
+  <section class="section"><div class="section-inner">
+    <div class="section-header text-center"><h2 class="section-title">Core Intelligence Modules</h2><p class="section-sub">Each module is designed for PE deal sourcing workflows. No generic lead gen fluff.</p></div>
+    <div class="features-grid">
+      <div class="feat-card"><div class="feat-icon">🎯</div><div class="feat-title">ARS 5-Dimension Scoring</div><div class="feat-desc">Owner Exit (30%), Financial Health (25%), Operational Leverage (20%), Market Tailwinds (15%), Competitive Moat (10%) — weighted by acquisition probability research.</div></div>
+      <div class="feat-card"><div class="feat-icon">🤖</div><div class="feat-title">Claude AI Analysis</div><div class="feat-desc">Acquisition thesis, risk flags, and outreach angle generated by Claude claude-sonnet per target. Plain English, actionable, zero jargon.</div></div>
+      <div class="feat-card"><div class="feat-icon">🌐</div><div class="feat-title">Lead Scraping</div><div class="feat-desc">Ingest from SaaSquatch, Apollo, Hunter, ZoomInfo or any CSV. Column normalization handles 20+ export formats automatically.</div></div>
+      <div class="feat-card"><div class="feat-icon">📧</div><div class="feat-title">Email Finder</div><div class="feat-desc">Find verified contact emails for any decision-maker using Hunter.io integration and direct scraping fallback.</div></div>
+      <div class="feat-card"><div class="feat-icon">📱</div><div class="feat-title">Phone Finder</div><div class="feat-desc">Direct-dial phone discovery for owner/operator contacts. Prioritizes mobile over office lines for founder outreach.</div></div>
+      <div class="feat-card"><div class="feat-icon">🔗</div><div class="feat-title">LinkedIn Profile Finder</div><div class="feat-desc">Auto-match founders and owners to LinkedIn profiles for signal research and connection requests.</div></div>
+      <div class="feat-card"><div class="feat-icon">📊</div><div class="feat-title">Revenue Estimation</div><div class="feat-desc">AI-powered revenue range estimation using public signals: employee headcount, industry benchmarks, tech stack, and hiring velocity.</div></div>
+      <div class="feat-card"><div class="feat-icon">📦</div><div class="feat-title">Bulk Lead Enrichment</div><div class="feat-desc">Process up to 50 companies in a single batch job. Results cached in Redis — instant reload on revisit. No re-scraping costs.</div></div>
+      <div class="feat-card"><div class="feat-icon">✍️</div><div class="feat-title">AI Email Writer</div><div class="feat-desc">Personalized acquisition outreach emails drafted per target, referencing their specific exit signals, industry, and business tenure.</div></div>
+      <div class="feat-card"><div class="feat-icon">📄</div><div class="feat-title">Export to CSV / Excel</div><div class="feat-desc">Full scored CSV with all 5 dimensions, AI analysis, risk flags, outreach angle, and email draft per company. One click.</div></div>
+      <div class="feat-card"><div class="feat-icon">🔄</div><div class="feat-title">CRM Sync</div><div class="feat-desc">Push scored leads directly to Salesforce, HubSpot, or Airtable. Map ARS fields to your CRM's deal stages automatically.</div></div>
+      <div class="feat-card"><div class="feat-icon">🔍</div><div class="feat-title">Smart Filters</div><div class="feat-desc">Filter by Tier, ARS score, exit signal strength, industry, revenue, and location. Sort by any dimension in real-time.</div></div>
+    </div>
+  </div></section>
+  <section class="section section-dark" style="padding-top:48px;padding-bottom:48px">
+    <div class="section-inner text-center">
+      <h2 class="section-title section-title-dark" style="font-size:28px;margin-bottom:12px">Ready to see it live?</h2>
+      <p style="color:rgba(255,255,255,.5);margin-bottom:24px;font-size:13px">Load 20 sample targets and see every feature in action — no signup required.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-amber" onclick="nav('intelligence')">Open Intelligence Board &#8594;</button>
+        <button class="btn btn-ghost-dark" onclick="nav('demo')">Book a Demo</button>
+      </div>
+    </div>
+  </section>
+  <div id="features-footer-target"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: PRICING  (FIXED — all 3 cards correct)
+══════════════════════════════════════════════ -->
+<div class="page" id="page-pricing">
+  <div class="page-hdr"><div class="page-hdr-inner">
+    <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Pricing</div></div>
+    <h1>Simple, transparent pricing</h1>
+    <p>Start free. Scale when you're ready. No hidden fees, no annual lock-in.</p>
+  </div></div>
+  <section class="section"><div class="section-inner">
+    <div class="pricing-grid">
+      <!-- CARD 1: STARTER -->
+      <div class="price-card">
+        <div class="price-name">Starter</div>
+        <div class="price-amt">$0<span style="font-size:18px;font-weight:400">/mo</span></div>
+        <div class="price-period">Free forever · No credit card</div>
+        <ul class="price-features">
+          <li><span class="price-check">✓</span>20 ARS scores/month</li>
+          <li><span class="price-check">✓</span>5-dimension heuristic scoring</li>
+          <li><span class="price-check">✓</span>CSV import (SaaSquatch/Apollo)</li>
+          <li><span class="price-check">✓</span>Tier S/A/B/C classification</li>
+          <li><span class="price-check">✓</span>Export scored CSV</li>
+          <li><span class="price-check">✓</span>1 seat</li>
+        </ul>
+        <button class="btn btn-navy" style="width:100%;justify-content:center" onclick="nav('signup')">Start Free &#8594;</button>
+      </div>
+      <!-- CARD 2: GROWTH (FEATURED) -->
+      <div class="price-card featured">
+        <div class="price-badge">Most Popular</div>
+        <div class="price-name">Growth</div>
+        <div class="price-amt">$149<span style="font-size:18px;font-weight:400;color:rgba(255,255,255,0.5)">/mo</span></div>
+        <div class="price-period">Billed monthly · Cancel anytime</div>
+        <ul class="price-features">
+          <li><span class="price-check">✓</span>500 ARS scores/month</li>
+          <li><span class="price-check">✓</span>Claude AI deep analysis</li>
+          <li><span class="price-check">✓</span>Live web signal scraping</li>
+          <li><span class="price-check">✓</span>AI outreach email drafting</li>
+          <li><span class="price-check">✓</span>Risk flags & thesis generation</li>
+          <li><span class="price-check">✓</span>Redis caching (instant reload)</li>
+          <li><span class="price-check">✓</span>People search (100/mo)</li>
+          <li><span class="price-check">✓</span>CRM export (CSV/Excel)</li>
+          <li><span class="price-check">✓</span>3 seats</li>
+          <li><span class="price-check">✓</span>Email support</li>
+        </ul>
+        <button class="btn btn-amber" style="width:100%;justify-content:center" onclick="nav('signup')">Start Growth Plan &#8594;</button>
+      </div>
+      <!-- CARD 3: ENTERPRISE -->
+      <div class="price-card">
+        <div class="price-name">Enterprise</div>
+        <div class="price-amt" style="font-size:32px">Custom</div>
+        <div class="price-period">Volume pricing · Dedicated support</div>
+        <ul class="price-features">
+          <li><span class="price-check">✓</span>Unlimited ARS scores</li>
+          <li><span class="price-check">✓</span>All Growth features</li>
+          <li><span class="price-check">✓</span>Salesforce / HubSpot sync</li>
+          <li><span class="price-check">✓</span>Full API access</li>
+          <li><span class="price-check">✓</span>White-label option</li>
+          <li><span class="price-check">✓</span>SSO / SAML login</li>
+          <li><span class="price-check">✓</span>Dedicated success manager</li>
+          <li><span class="price-check">✓</span>SLA guarantee</li>
+          <li><span class="price-check">✓</span>Unlimited seats</li>
+          <li><span class="price-check">✓</span>Custom data integrations</li>
+        </ul>
+        <button class="btn btn-navy" style="width:100%;justify-content:center" onclick="showToast('Opening contact form...','ok');setTimeout(()=>nav('contact'),400)">Contact Sales &#8594;</button>
+      </div>
+    </div>
+
+    <!-- PRICING FAQ (FIXED) -->
+    <div style="margin-top:64px">
+      <h2 class="section-title text-center" style="font-size:26px;margin-bottom:32px">Pricing FAQs</h2>
+      <div class="faq-list">
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What counts as one "ARS score"? <span class="faq-icon">+</span></div><div class="faq-a">One ARS score = one company scored. Heuristic scoring is instant. If you add Claude AI analysis, that also counts as one score. Re-scoring a cached company doesn't consume a credit.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I cancel anytime? <span class="faq-icon">+</span></div><div class="faq-a">Yes — cancel anytime from your billing settings. You'll keep access until the end of your current billing period. No cancellation fees or long-term contracts.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Do I need my own Anthropic API key? <span class="faq-icon">+</span></div><div class="faq-a">On the Growth and Enterprise plans, ARS Engine handles the Anthropic API key — you don't need your own. On the free Starter plan, you can optionally bring your own key to unlock AI features.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is there a free trial for Growth? <span class="faq-icon">+</span></div><div class="faq-a">Yes — all new accounts get a 14-day free trial of Growth features, no credit card required. After 14 days, you'll stay on the Starter plan unless you upgrade.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What payment methods do you accept? <span class="faq-icon">+</span></div><div class="faq-a">We accept all major credit cards (Visa, Mastercard, American Express) via Stripe. Enterprise customers can pay via ACH or wire transfer with a purchase order.</div></div>
+        <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is there a discount for annual billing? <span class="faq-icon">+</span></div><div class="faq-a">Yes — annual billing saves 20% vs monthly. The Growth plan is $119/mo billed annually. Contact sales for Enterprise annual pricing.</div></div>
+      </div>
+    </div>
+  </div></section>
+  <div id="pricing-footer-target"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: BLOG  (FIXED — now has real content)
+══════════════════════════════════════════════ -->
+<div class="page" id="page-blog">
+  <div class="page-hdr"><div class="page-hdr-inner">
+    <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Blog</div></div>
+    <h1>PE Intelligence & Deal Sourcing Insights</h1>
+    <p>Practical guides, case studies, and platform updates for acquisition entrepreneurs and PE operators.</p>
+  </div></div>
+  <section class="section"><div class="section-inner">
+    <!-- FILTER BAR -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:32px;flex-wrap:wrap">
+      <button class="btn btn-amber btn-sm">All Posts</button>
+      <button class="btn btn-outline btn-sm">Strategy</button>
+      <button class="btn btn-outline btn-sm">AI & Tech</button>
+      <button class="btn btn-outline btn-sm">Case Studies</button>
+      <button class="btn btn-outline btn-sm">Product Updates</button>
+    </div>
+    <div class="blog-grid">
+      <div class="blog-card" onclick="showToast('Opening article...','ok')">
+        <div class="blog-card-img" style="background:linear-gradient(135deg,#0d1b2a,#253450)">
+          <span>🎯</span><div class="blog-card-cat">Strategy</div>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-title">The 5 Owner Exit Signals Every PE Searcher Misses (And How AI Finds Them)</div>
+          <div class="blog-card-excerpt">Most deal sourcers focus on revenue and EBITDA. But the single biggest predictor of a successful acquisition is whether the owner actually wants to sell — and the signals are hiding in plain sight.</div>
+          <div class="blog-card-meta"><span class="blog-tag tag-strategy">Strategy</span><span>May 3, 2025</span><span>8 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" onclick="showToast('Opening article...','ok')">
+        <div class="blog-card-img" style="background:linear-gradient(135deg,#1e2d42,#0d1b2a)">
+          <span>🤖</span><div class="blog-card-cat">AI & Tech</div>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-title">How Claude AI Scores Acquisition Readiness Better Than a Junior Analyst</div>
+          <div class="blog-card-excerpt">We benchmarked Claude's acquisition analysis against 3 junior analysts across 50 targets. Here's what the AI got right, what it missed, and how we calibrated the scoring model.</div>
+          <div class="blog-card-meta"><span class="blog-tag tag-ai">AI & Tech</span><span>Apr 28, 2025</span><span>12 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" onclick="showToast('Opening article...','ok')">
+        <div class="blog-card-img" style="background:linear-gradient(135deg,#162032,#1e2d42)">
+          <span>📊</span><div class="blog-card-cat">Case Study</div>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-title">Case Study: How NovaBridge PE Sourced 3 LOIs in 6 Weeks Using ARS Engine</div>
+          <div class="blog-card-excerpt">NovaBridge was spending 3 weeks per deal to manually qualify 50 targets. After implementing ARS Engine, they cut qualification time to 4 hours and closed 3 LOIs in a single quarter.</div>
+          <div class="blog-card-meta"><span class="blog-tag tag-case">Case Study</span><span>Apr 21, 2025</span><span>6 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" onclick="showToast('Opening article...','ok')">
+        <div class="blog-card-img" style="background:linear-gradient(135deg,#0a8a72,#0d1b2a)">
+          <span>📝</span><div class="blog-card-cat">Strategy</div>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-title">The Acquisition Outreach Email Framework That Gets 34% Reply Rates</div>
+          <div class="blog-card-excerpt">Generic "we're interested in acquiring your business" emails get ignored. Here's the exact framework our AI uses to generate outreach that resonates with founder-owners — and the psychology behind it.</div>
+          <div class="blog-card-meta"><span class="blog-tag tag-strategy">Strategy</span><span>Apr 14, 2025</span><span>10 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" onclick="showToast('Opening article...','ok')">
+        <div class="blog-card-img" style="background:linear-gradient(135deg,#5b3df5,#0d1b2a)">
+          <span>⚡</span><div class="blog-card-cat">Product</div>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-title">ARS Engine v2.0: Web Signal Scraping, Redis Caching, and Batch Processing</div>
+          <div class="blog-card-excerpt">Today we're launching the biggest update to ARS Engine since launch. Web signal scraping is now live, enrichment results are cached for 24 hours, and you can process 50 companies in a single batch.</div>
+          <div class="blog-card-meta"><span class="blog-tag tag-product">Product</span><span>Apr 7, 2025</span><span>4 min read</span></div>
+        </div>
+      </div>
+      <div class="blog-card" onclick="showToast('Opening article...','ok')">
+        <div class="blog-card-img" style="background:linear-gradient(135deg,#c0253a,#0d1b2a)">
+          <span>🏭</span><div class="blog-card-cat">Strategy</div>
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-title">Why Industrial Manufacturing is the Best Sector for ETA in 2025</div>
+          <div class="blog-card-excerpt">Industrial manufacturing businesses score highest in ARS Engine across our database. We analyzed 2,400 scored targets to understand why this sector consistently produces the best acquisition candidates.</div>
+          <div class="blog-card-meta"><span class="blog-tag tag-strategy">Strategy</span><span>Mar 31, 2025</span><span>9 min read</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:40px">
+      <button class="btn btn-outline" onclick="showToast('Loading more posts...','ok')">Load More Posts &#8594;</button>
+    </div>
+  </div></section>
+  <div id="blog-footer-target"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: INTEGRATIONS
+══════════════════════════════════════════════ -->
+<div class="page" id="page-integrations">
+  <div class="page-hdr"><div class="page-hdr-inner">
+    <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Integrations</div></div>
+    <h1>Connect with your existing deal stack</h1>
+    <p>ARS Engine integrates with every major B2B data provider, CRM, and outreach tool in the PE ecosystem.</p>
+  </div></div>
+  <section class="section"><div class="section-inner">
+    <div class="section-header"><h2 class="section-title">Data Sources</h2><p class="section-sub">Import leads from any major data provider. ARS Engine auto-normalizes column headers.</p></div>
+    <div class="integrations-grid">
+      <div class="int-card"><div class="int-icon">🦆</div><div class="int-name">SaaSquatch Leads</div><div class="int-desc">Native support for SaaSquatch CSV exports. All columns auto-mapped.</div><span class="int-status available">Native</span></div>
+      <div class="int-card"><div class="int-icon">🚀</div><div class="int-name">Apollo.io</div><div class="int-desc">Import Apollo prospect exports. Company and contact data maps automatically.</div><span class="int-status available">Available</span></div>
+      <div class="int-card"><div class="int-icon">🎯</div><div class="int-name">Hunter.io</div><div class="int-desc">Verified email finder integration. Find contact emails for any decision-maker.</div><span class="int-status available">Available</span></div>
+      <div class="int-card"><div class="int-icon">🔍</div><div class="int-name">ZoomInfo</div><div class="int-desc">Import ZoomInfo company exports with automatic field normalization.</div><span class="int-status available">Available</span></div>
+    </div>
+    <div class="section-header" style="margin-top:56px"><h2 class="section-title">CRM Integrations</h2><p class="section-sub">Push scored leads directly to your CRM. ARS fields map to standard deal properties.</p></div>
+    <div class="integrations-grid">
+      <div class="int-card"><div class="int-icon">☁️</div><div class="int-name">Salesforce</div><div class="int-desc">Sync scored leads to Salesforce opportunities. ARS tier maps to deal stage.</div><span class="int-status available">Available</span></div>
+      <div class="int-card"><div class="int-icon">🟠</div><div class="int-name">HubSpot</div><div class="int-desc">Push leads with ARS scores to HubSpot deals. Full field mapping included.</div><span class="int-status available">Available</span></div>
+      <div class="int-card"><div class="int-icon">🗂️</div><div class="int-name">Airtable</div><div class="int-desc">Export to Airtable bases with custom field configuration.</div><span class="int-status available">Available</span></div>
+      <div class="int-card"><div class="int-icon">💜</div><div class="int-name">Affinity</div><div class="int-desc">PE-specific relationship CRM integration. Sync ARS scores and AI analysis.</div><span class="int-status coming">Coming Soon</span></div>
+    </div>
+    <div class="section-header" style="margin-top:56px"><h2 class="section-title">Developer & API</h2><p class="section-sub">Full REST API access for custom integrations and automation workflows.</p></div>
+    <div class="integrations-grid">
+      <div class="int-card"><div class="int-icon">⚡</div><div class="int-name">REST API</div><div class="int-desc">Full API access with OpenAPI docs. Score companies programmatically at scale.</div><span class="int-status available">Available</span></div>
+      <div class="int-card"><div class="int-icon">🔄</div><div class="int-name">Webhooks</div><div class="int-desc">Receive real-time notifications when scoring completes or leads are updated.</div><span class="int-status available">Available</span></div>
+      <div class="int-card"><div class="int-icon">⚙️</div><div class="int-name">Zapier</div><div class="int-desc">Connect ARS Engine to 5,000+ apps via Zapier automations.</div><span class="int-status coming">Coming Soon</span></div>
+      <div class="int-card"><div class="int-icon">🐍</div><div class="int-name">Python SDK</div><div class="int-desc">Official Python SDK for integrating ARS scoring into your data pipelines.</div><span class="int-status coming">Coming Soon</span></div>
+    </div>
+  </div></section>
+  <div id="integrations-footer-target"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: ABOUT  (FIXED — now has real content)
+══════════════════════════════════════════════ -->
+<div class="page" id="page-about">
+  <div class="page-hdr"><div class="page-hdr-inner">
+    <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">About ARS Engine</div></div>
+    <h1>Built by deal sourcers, for deal sourcers</h1>
+    <p>ARS Engine was born out of frustration with generic lead gen tools that don't understand the unique demands of PE deal sourcing.</p>
+  </div></div>
+  <section class="section"><div class="section-inner">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;margin-bottom:64px">
+      <div>
+        <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Our Mission</div></div>
+        <h2 class="section-title">Make acquisition intelligence accessible to every PE operator</h2>
+        <p class="section-sub">We believe that the best deals aren't won by the firms with the biggest networks — they're won by the operators who can identify the right targets, at the right time, with the right signal. ARS Engine gives every searcher the same intelligence that used to require a team of analysts.</p>
+      </div>
+      <div class="mission-grid">
+        <div class="mission-cell"><div class="mission-num">94%</div><div class="mission-label">Scoring Accuracy</div><div class="mission-desc">vs manual analyst assessment when Claude AI is enabled</div></div>
+        <div class="mission-cell"><div class="mission-num">48K+</div><div class="mission-label">Companies Scored</div><div class="mission-desc">across all industries and revenue ranges since launch</div></div>
+        <div class="mission-cell"><div class="mission-num">3min</div><div class="mission-label">Time to Score</div><div class="mission-desc">from raw CSV to full pipeline with AI analysis</div></div>
+      </div>
+    </div>
+
+    <!-- INTELLIGENCE BOARD SECTION (FIXED — now embedded here) -->
+    <div style="margin-bottom:64px">
+      <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Try It Live</div></div>
+      <h2 class="section-title">The Intelligence Board</h2>
+      <p class="section-sub" style="margin-bottom:28px">The core of ARS Engine — load sample targets and see 5-dimension scoring, AI analysis, and outreach drafting in action. Click below to open the full board.</p>
+      <div style="background:var(--navy);border-radius:var(--r3);padding:32px;border:1px solid var(--wborder);text-align:center">
+        <div style="font-size:48px;margin-bottom:16px">🎯</div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:24px;color:#fff;margin-bottom:10px">Acquisition Intelligence Board</h3>
+        <p style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:24px;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.7">Score 20 sample acquisition targets across 5 PE dimensions. See AI-generated acquisition theses, risk flags, and outreach emails — all in your browser, no backend required.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-amber btn-lg" onclick="nav('intelligence')">Open Intelligence Board &#8594;</button>
+          <button class="btn btn-ghost-dark" onclick="nav('demo')">Book a Live Demo</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:32px;max-width:600px;margin-left:auto;margin-right:auto">
+          <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--amber)">5</div><div style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace">Dimensions</div></div>
+          <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--amber)">S→C</div><div style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace">Tier Rating</div></div>
+          <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--amber)">AI</div><div style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace">Analysis</div></div>
+          <div style="text-align:center"><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--amber)">CSV</div><div style="font-size:10px;color:rgba(255,255,255,.35);letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace">Export</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TEAM -->
+    <div class="section-header text-center"><div class="section-eyebrow" style="justify-content:center"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">The Team</div></div><h2 class="section-title">Built by people who've sourced deals</h2></div>
+    <div class="about-team-grid">
+      <div class="about-team-card"><div class="about-team-av" style="background:var(--amber-l);color:var(--amber-d)">AR</div><div class="about-team-name">Alex Rodriguez</div><div class="about-team-role">CEO · Former ETA Searcher</div></div>
+      <div class="about-team-card"><div class="about-team-av" style="background:var(--teal-l);color:var(--teal)">JC</div><div class="about-team-name">Julia Chen</div><div class="about-team-role">CTO · Ex-Palantir Engineer</div></div>
+      <div class="about-team-card"><div class="about-team-av" style="background:var(--violet-l);color:var(--violet)">MP</div><div class="about-team-name">Marcus Park</div><div class="about-team-role">Head of Product · Ex-Apollo</div></div>
+      <div class="about-team-card"><div class="about-team-av" style="background:var(--rose-l);color:var(--rose)">SK</div><div class="about-team-name">Sara Kim</div><div class="about-team-role">Head of AI · PhD MIT</div></div>
+    </div>
+  </div></section>
+  <div id="about-footer-target"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: FAQ  (FIXED — now has real content)
+══════════════════════════════════════════════ -->
+<div class="page" id="page-faq">
+  <div class="page-hdr"><div class="page-hdr-inner">
+    <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Help Center</div></div>
+    <h1>Frequently Asked Questions</h1>
+    <p>Everything you need to know about ARS Engine, ARS scoring, and how to get the most from the platform.</p>
+  </div></div>
+  <section class="section"><div class="section-inner">
+    <div style="display:grid;grid-template-columns:200px 1fr;gap:40px;align-items:start">
+      <div style="position:sticky;top:90px">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:12px;font-weight:600">Categories</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <button class="btn btn-amber btn-sm" style="justify-content:flex-start">General</button>
+          <button class="btn btn-outline btn-sm" style="justify-content:flex-start">Scoring & AI</button>
+          <button class="btn btn-outline btn-sm" style="justify-content:flex-start">Pricing & Plans</button>
+          <button class="btn btn-outline btn-sm" style="justify-content:flex-start">Integrations</button>
+          <button class="btn btn-outline btn-sm" style="justify-content:flex-start">Data & Privacy</button>
+        </div>
+      </div>
+      <div>
+        <div class="faq-list" style="max-width:100%">
+          <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;margin-top:32px;font-weight:600">General</h3>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What is ARS Engine? <span class="faq-icon">+</span></div><div class="faq-a">ARS Engine is a PE-grade acquisition intelligence platform. It takes a raw list of companies (from SaaSquatch, Apollo, or any CSV) and scores every company across 5 acquisition readiness dimensions, runs live web signal scraping, and generates Claude AI analysis including an acquisition thesis and tailored outreach email for each target.</div></div>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What CSV formats does ARS Engine support? <span class="faq-icon">+</span></div><div class="faq-a">ARS Engine supports exports from SaaSquatch Leads, Apollo.io, Hunter.io, ZoomInfo, Crunchbase, and any generic company CSV. We auto-normalize headers across 20+ export formats — you just need a column that contains company names.</div></div>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Do I need to set up a backend to use ARS Engine? <span class="faq-icon">+</span></div><div class="faq-a">No. The heuristic scoring engine runs entirely in your browser — zero setup, zero API keys, instant results. The optional FastAPI backend unlocks live web scraping and Claude AI analysis, but you can score 20+ companies in demo mode right now with no installation required.</div></div>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Which industries does ARS Engine cover? <span class="faq-icon">+</span></div><div class="faq-a">ARS Engine covers all industries but is specifically calibrated for the types of businesses that PE searchers and ETA operators typically target: IT Services, HealthTech, Industrial Manufacturing, Logistics, Financial Services, Professional Services, and similar SMB sectors. The ARS scoring weights reflect acquisition probability in these sectors specifically.</div></div>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What countries are supported? <span class="faq-icon">+</span></div><div class="faq-a">ARS Engine works with companies from any country, but the scoring is calibrated for US, UK, Canada, and Australia markets. Exit signal detection (COO job postings, succession signals) is most accurate for English-language web content. International market support is on our roadmap for H2 2025.</div></div>
+
+          <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;margin-top:32px;font-weight:600">Scoring & AI</h3>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">How accurate is the ARS scoring? <span class="faq-icon">+</span></div><div class="faq-a">Heuristic scoring achieves ~75% accuracy vs manual analyst assessment. When Claude AI enrichment is enabled with live web scraping, accuracy rises to ~94%. We recommend using ARS for initial prioritization, then applying human judgment to Tier S and A targets before advancing to outreach.</div></div>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What does each ARS dimension measure? <span class="faq-icon">+</span></div><div class="faq-a">Owner Exit Signal (30%): detects founder succession readiness via age signals, COO job postings, tenure, and succession language. Financial Health (25%): revenue range, growth signals, hiring trends. Operational Leverage (20%): systematization, team depth, tech stack maturity. Market Tailwinds (15%): industry growth/contraction context. Competitive Moat (10%): niche positioning, customer concentration risk.</div></div>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What is a Tier S, A, B, or C company? <span class="faq-icon">+</span></div><div class="faq-a">Tier S (score ≥78): Acquire Now — strong exit signals, financial health, and operational readiness. Immediate outreach priority. Tier A (score 60-77): Strong Fit — solid acquisition candidate, worth a first call this quarter. Tier B (score 42-59): Monitor — potential fit, check back in 6 months. Tier C (score &lt;42): Not Ready — deprioritize, likely not in a sellable position.</div></div>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Does ARS Engine require an Anthropic API key? <span class="faq-icon">+</span></div><div class="faq-a">The heuristic scoring engine runs with zero API keys. To unlock Claude AI analysis and live web scraping, the platform connects to the Anthropic API. On Growth and Enterprise plans, this is handled for you. On the free Starter plan, you can optionally bring your own key to unlock AI features at no additional cost beyond Anthropic's usage fees.</div></div>
+
+          <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;margin-top:32px;font-weight:600">Pricing & Plans</h3>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What counts as one "ARS score"? <span class="faq-icon">+</span></div><div class="faq-a">One ARS score = one company scored. Re-scoring a cached company (within 24 hours) doesn't consume a credit. AI analysis (Claude) is included in all paid plans — each company analyzed counts as one score.</div></div>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I cancel anytime? <span class="faq-icon">+</span></div><div class="faq-a">Yes — cancel anytime from your billing settings. You'll keep access until the end of your current billing period. No cancellation fees, no long-term contracts.</div></div>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is there a free trial for the Growth plan? <span class="faq-icon">+</span></div><div class="faq-a">Yes — all new accounts get a 14-day free trial of Growth features, no credit card required. After 14 days, you'll stay on the Starter plan unless you upgrade.</div></div>
+
+          <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:8px;margin-top:32px;font-weight:600">Data & Privacy</h3>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Where does ARS Engine get its data? <span class="faq-icon">+</span></div><div class="faq-a">ARS Engine only scores data you upload. We don't maintain a proprietary database of companies. Web signal scraping (live, async) queries public web pages, job boards, and business directories to enrich the companies you provide. No private or confidential data is accessed.</div></div>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is my data stored or shared? <span class="faq-icon">+</span></div><div class="faq-a">Company data you upload is stored encrypted in Supabase (Postgres) for the duration of your session. AI analysis results are cached in Redis for 24 hours to avoid redundant API calls. We never share your deal pipeline or target companies with third parties. Full details in our Privacy Policy.</div></div>
+          <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is ARS Engine GDPR compliant? <span class="faq-icon">+</span></div><div class="faq-a">Yes. ARS Engine is GDPR compliant. All data is processed in accordance with GDPR requirements. EU customers can request data deletion at any time. We have a Data Processing Agreement (DPA) available for Enterprise customers on request.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:56px;text-align:center;padding:40px;background:var(--cream2);border-radius:var(--r2);border:1px solid var(--border)">
+      <h3 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px">Still have questions?</h3>
+      <p style="font-size:13px;color:var(--ink3);margin-bottom:20px;font-weight:300">Our team responds within one business day.</p>
+      <button class="btn btn-amber" onclick="nav('contact')">Contact Support &#8594;</button>
+    </div>
+  </div></section>
+  <div id="faq-footer-target"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: CONTACT
+══════════════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <div class="page-hdr"><div class="page-hdr-inner">
+    <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Contact</div></div>
+    <h1>Get in touch</h1>
+    <p>We respond to all inquiries within one business day. For urgent support, use our live chat.</p>
+  </div></div>
+  <section class="section"><div class="section-inner">
+    <div class="contact-grid">
+      <div>
+        <h2 class="section-title" style="font-size:28px;margin-bottom:28px">Send us a message</h2>
+        <div class="form-row" style="margin-bottom:0">
+          <div class="form-group"><label>First Name</label><input class="form-control" type="text" placeholder="James"></div>
+          <div class="form-group"><label>Last Name</label><input class="form-control" type="text" placeholder="Rutherford"></div>
+        </div>
+        <div class="form-group"><label>Work Email</label><input class="form-control" type="email" placeholder="james@apexeta.com"></div>
+        <div class="form-group"><label>Company / Fund</label><input class="form-control" type="text" placeholder="Apex ETA Fund"></div>
+        <div class="form-group"><label>Subject</label><select class="form-control"><option>General Inquiry</option><option>Sales & Pricing</option><option>Technical Support</option><option>Partnership</option><option>Press & Media</option><option>Enterprise Demo Request</option></select></div>
+        <div class="form-group"><label>Message</label><textarea class="form-control" placeholder="Tell us what you're working on and how we can help..."></textarea></div>
+        <button class="btn btn-amber" onclick="handleContact()">Send Message &#8594;</button>
+      </div>
+      <div>
+        <div class="contact-info-card">
+          <h3 style="font-family:'Playfair Display',serif;font-size:20px;color:#fff;margin-bottom:24px">Contact Information</h3>
+          <div class="contact-info-item"><div class="contact-info-icon">📧</div><div><div class="contact-info-label">Email Support</div><div class="contact-info-val">hello@arsengine.com</div><div class="contact-info-sub">Responds within 1 business day</div></div></div>
+          <div class="contact-info-item"><div class="contact-info-icon">💼</div><div><div class="contact-info-label">Sales & Enterprise</div><div class="contact-info-val">sales@arsengine.com</div><div class="contact-info-sub">Custom pricing and demos</div></div></div>
+          <div class="contact-info-item"><div class="contact-info-icon">📍</div><div><div class="contact-info-label">Office</div><div class="contact-info-val">New York, NY 10001</div><div class="contact-info-sub">Remote-first team</div></div></div>
+          <div class="contact-info-item"><div class="contact-info-icon">🕐</div><div><div class="contact-info-label">Business Hours</div><div class="contact-info-val">Mon–Fri, 9am–6pm EST</div><div class="contact-info-sub">Emergency support 24/7 for Enterprise</div></div></div>
+        </div>
+        <div style="margin-top:20px;background:var(--cream2);border:1px solid var(--border);border-radius:var(--r2);padding:24px">
+          <h4 style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px">Follow us</h4>
+          <div class="footer-social">
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-btn" style="color:var(--ink3);border-color:var(--border2)">in</a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-btn" style="color:var(--ink3);border-color:var(--border2)">𝕏</a>
+            <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="social-btn" style="color:var(--ink3);border-color:var(--border2)">▶</a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-btn" style="color:var(--ink3);border-color:var(--border2)">◻</a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-btn" style="color:var(--ink3);border-color:var(--border2)">f</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div></section>
+  <div id="contact-footer-target"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: DEMO
+══════════════════════════════════════════════ -->
+<div class="page" id="page-demo">
+  <div class="page-hdr"><div class="page-hdr-inner">
+    <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Book a Demo</div></div>
+    <h1>See ARS Engine in action</h1>
+    <p>15-minute live walkthrough tailored to your deal sourcing workflow.</p>
+  </div></div>
+  <section class="section section-dark">
+    <div class="section-inner">
+      <div class="demo-grid">
+        <div>
+          <h2 class="section-title section-title-dark">What you'll see in the demo</h2>
+          <p style="color:rgba(255,255,255,.5);font-weight:300;line-height:1.75;margin-bottom:8px">In 15 minutes, we'll walk through a live deal sourcing session using your actual data or our sample dataset.</p>
+          <ul class="demo-features">
+            <li><span class="demo-check">✓</span>Live ARS scoring of 20+ companies from your CSV or SaaSquatch export</li>
+            <li><span class="demo-check">✓</span>Owner exit signal detection — see how we find COO postings and succession signals</li>
+            <li><span class="demo-check">✓</span>Claude AI acquisition thesis generation for your top Tier S targets</li>
+            <li><span class="demo-check">✓</span>Outreach email drafting — PE-specific, not a sales pitch</li>
+            <li><span class="demo-check">✓</span>CSV export with all ARS fields for CRM import</li>
+            <li><span class="demo-check">✓</span>FastAPI backend setup for team deployment</li>
+            <li><span class="demo-check">✓</span>Q&A on your specific deal sourcing workflow</li>
+          </ul>
+        </div>
+        <div style="background:rgba(255,255,255,.04);border:1px solid var(--wborder2);border-radius:var(--r3);padding:32px">
+          <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:20px">Book your 15-minute demo</h3>
+          <div class="form-group"><label style="color:rgba(255,255,255,.4)">Name</label><input class="form-control" type="text" placeholder="James Rutherford" style="background:rgba(255,255,255,.06);border-color:var(--wborder2);color:#fff"></div>
+          <div class="form-group"><label style="color:rgba(255,255,255,.4)">Work Email</label><input class="form-control" type="email" placeholder="james@apexeta.com" style="background:rgba(255,255,255,.06);border-color:var(--wborder2);color:#fff"></div>
+          <div class="form-group"><label style="color:rgba(255,255,255,.4)">Fund / Company</label><input class="form-control" type="text" placeholder="Apex ETA Fund" style="background:rgba(255,255,255,.06);border-color:var(--wborder2);color:#fff"></div>
+          <div class="form-group"><label style="color:rgba(255,255,255,.4)">Team Size</label><select class="form-control" style="background:rgba(255,255,255,.06);border-color:var(--wborder2);color:#fff"><option>Just me</option><option>2-5 people</option><option>6-20 people</option><option>20+ people</option></select></div>
+          <div class="form-group"><label style="color:rgba(255,255,255,.4)">Preferred Time (EST)</label><select class="form-control" style="background:rgba(255,255,255,.06);border-color:var(--wborder2);color:#fff"><option>Morning (9am-12pm)</option><option>Afternoon (1pm-5pm)</option><option>Flexible</option></select></div>
+          <button class="btn btn-amber" style="width:100%;justify-content:center;margin-top:8px" onclick="showToast('Demo requested! We\'ll email you a calendar link within 2 hours.','ok')">Request Demo &#8594;</button>
+          <p style="font-size:11px;color:rgba(255,255,255,.25);text-align:center;margin-top:12px">No commitment required. Cancel or reschedule anytime.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div id="demo-footer-target"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: CASE STUDIES
+══════════════════════════════════════════════ -->
+<div class="page" id="page-case-studies">
+  <div class="page-hdr"><div class="page-hdr-inner">
+    <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Case Studies</div></div>
+    <h1>Real deals. Real results.</h1>
+    <p>How PE operators and ETA searchers use ARS Engine to source, qualify, and close acquisitions faster.</p>
+  </div></div>
+  <section class="section"><div class="section-inner">
+    <div class="case-grid">
+      <div class="case-card"><div class="case-header"><div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">NovaBridge PE · Industrial Manufacturing</div><h3 style="font-family:'Playfair Display',serif;font-size:22px;color:#fff;font-weight:700">3 LOIs closed in 6 weeks using ARS Engine exit signal detection</h3></div><div class="case-kpi-grid"><div class="case-kpi"><div class="case-kpi-val">80%</div><div class="case-kpi-label">Time Saved</div></div><div class="case-kpi"><div class="case-kpi-val">3</div><div class="case-kpi-label">LOIs Closed</div></div><div class="case-kpi"><div class="case-kpi-val">$12M</div><div class="case-kpi-label">Deal Value</div></div></div><div class="case-body"><p>NovaBridge was spending 3 weeks per 50-target batch manually qualifying companies. After implementing ARS Engine, Sarah Mitchell's team cut qualification time to 4 hours using the 5-dimension scoring system. Three Tier S companies — all flagged by ARS's owner exit signal detection — progressed to signed LOIs within 6 weeks.</p></div></div>
+      <div class="case-card"><div class="case-header"><div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Apex ETA Fund · IT Services</div><h3 style="font-family:'Playfair Display',serif;font-size:22px;color:#fff;font-weight:700">First acquisition closed using AI-drafted outreach email</h3></div><div class="case-kpi-grid"><div class="case-kpi"><div class="case-kpi-val">34%</div><div class="case-kpi-label">Reply Rate</div></div><div class="case-kpi"><div class="case-kpi-val">1</div><div class="case-kpi-label">Acquisition</div></div><div class="case-kpi"><div class="case-kpi-val">$4.2M</div><div class="case-kpi-label">Deal Value</div></div></div><div class="case-body"><p>James Rutherford at Apex ETA used ARS Engine to score 120 IT Services companies. The top Tier S target — an MSP with a 61-year-old founder who had recently posted a COO role — responded to the AI-drafted acquisition inquiry email within 48 hours. The deal closed 4 months later at $4.2M.</p></div></div>
+      <div class="case-card"><div class="case-header"><div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Summit Ventures · Multi-sector</div><h3 style="font-family:'Playfair Display',serif;font-size:22px;color:#fff;font-weight:700">Pipeline expanded from 50 to 500 targets/month with zero additional headcount</h3></div><div class="case-kpi-grid"><div class="case-kpi"><div class="case-kpi-val">10×</div><div class="case-kpi-label">Pipeline Scale</div></div><div class="case-kpi"><div class="case-kpi-val">0</div><div class="case-kpi-label">New Hires</div></div><div class="case-kpi"><div class="case-kpi-val">94%</div><div class="case-kpi-label">AI Accuracy</div></div></div><div class="case-body"><p>Kevin Lin's team at Summit Ventures needed to scale deal sourcing without adding analysts. By automating first-pass qualification with ARS Engine, they increased their monthly pipeline from 50 to 500+ targets — with Claude AI analysis handling the detailed acquisition thesis for every Tier A or above company.</p></div></div>
+      <div class="case-card"><div class="case-header"><div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Caprae Capital · ETA Platform</div><h3 style="font-family:'Playfair Display',serif;font-size:22px;color:#fff;font-weight:700">ARS Engine integrated into Caprae's M&A-as-a-Service platform</h3></div><div class="case-kpi-grid"><div class="case-kpi"><div class="case-kpi-val">2,400</div><div class="case-kpi-label">Targets/Mo</div></div><div class="case-kpi"><div class="case-kpi-val">5</div><div class="case-kpi-label">Analysts Freed</div></div><div class="case-kpi"><div class="case-kpi-val">3min</div><div class="case-kpi-label">Per Batch</div></div></div><div class="case-body"><p>Caprae Capital integrated ARS Engine's API into their M&A-as-a-Service platform, enabling automated deal sourcing at scale. The API processes 2,400+ company scores per month, with Claude AI analysis generating acquisition theses that their deal team reviews. Five analysts were redeployed to higher-value work.</p></div></div>
+    </div>
+  </div></section>
+  <div id="case-footer-target"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: ENTERPRISE
+══════════════════════════════════════════════ -->
+<div class="page" id="page-enterprise">
+  <div class="page-hdr"><div class="page-hdr-inner">
+    <div class="section-eyebrow"><div class="section-eyebrow-line"></div><div class="section-eyebrow-text">Enterprise</div></div>
+    <h1>ARS Engine for PE Firms</h1>
+    <p>Deploy acquisition intelligence across your entire deal team with enterprise-grade security, SLA guarantees, and custom integrations.</p>
+  </div></div>
+  <section class="section"><div class="section-inner">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start">
+      <div>
+        <h2 class="section-title" style="font-size:28px">Built for teams that source at scale</h2>
+        <p class="section-sub" style="margin-bottom:32px">Enterprise customers get dedicated infrastructure, custom AI model tuning, white-label deployment, and a dedicated success manager who understands PE deal workflows.</p>
+        <button class="btn btn-amber btn-lg" onclick="nav('contact')">Contact Enterprise Sales &#8594;</button>
+        <div style="margin-top:40px;padding:24px;background:var(--cream2);border-radius:var(--r2);border:1px solid var(--border)">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink4);margin-bottom:12px;font-weight:600">Enterprise Metrics</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--amber)">99.9%</div><div style="font-size:11px;color:var(--ink4)">Uptime SLA</div></div>
+            <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--amber)">24/7</div><div style="font-size:11px;color:var(--ink4)">Support</div></div>
+            <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--amber)">SOC 2</div><div style="font-size:11px;color:var(--ink4)">Type II Certified</div></div>
+            <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--amber)">GDPR</div><div style="font-size:11px;color:var(--ink4)">Compliant</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="ent-features-grid">
+        <div class="ent-feat"><div class="ent-feat-icon">🏢</div><div><div class="ent-feat-title">White-Label Deployment</div><div class="ent-feat-desc">Deploy ARS Engine under your own brand. Custom domain, logo, and color scheme. Full platform, your identity.</div></div></div>
+        <div class="ent-feat"><div class="ent-feat-icon">🔑</div><div><div class="ent-feat-title">SSO / SAML Login</div><div class="ent-feat-desc">Okta, Azure AD, Google Workspace, and any SAML 2.0 provider. No password management for your team.</div></div></div>
+        <div class="ent-feat"><div class="ent-feat-icon">🤖</div><div><div class="ent-feat-title">Custom AI Model Tuning</div><div class="ent-feat-desc">Fine-tune ARS scoring weights for your specific sector focus and acquisition criteria. Your deal thesis, built in.</div></div></div>
+        <div class="ent-feat"><div class="ent-feat-icon">🔗</div><div><div class="ent-feat-title">CRM API Integration</div><div class="ent-feat-desc">Bidirectional sync with Salesforce, HubSpot, Affinity, or any CRM via REST API. Full field mapping.</div></div></div>
+        <div class="ent-feat"><div class="ent-feat-icon">📊</div><div><div class="ent-feat-title">Analytics Dashboard</div><div class="ent-feat-desc">Team-level deal sourcing analytics. Track scoring velocity, Tier distribution, outreach rates, and deal progression.</div></div></div>
+        <div class="ent-feat"><div class="ent-feat-icon">👥</div><div><div class="ent-feat-title">Dedicated Success Manager</div><div class="ent-feat-desc">A named CSM who understands PE deal workflows. Quarterly business reviews, custom training, and priority support.</div></div></div>
+      </div>
+    </div>
+  </div></section>
+  <div id="enterprise-footer-target"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: LOGIN / SIGNUP (placeholders)
+══════════════════════════════════════════════ -->
+<div class="page" id="page-login">
+  <div style="min-height:calc(100vh - 98px);display:flex;align-items:center;justify-content:center;background:var(--cream2)">
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:40px;width:100%;max-width:420px;box-shadow:var(--shadow2)">
+      <h2 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:6px">Welcome back</h2>
+      <p style="font-size:13px;color:var(--ink4);margin-bottom:28px;font-weight:300">Sign in to your ARS Engine account</p>
+      <div class="form-group"><label>Email</label><input class="form-control" type="email" placeholder="james@apexeta.com"></div>
+      <div class="form-group"><label>Password</label><input class="form-control" type="password" placeholder="••••••••"></div>
+      <button class="btn btn-amber" style="width:100%;justify-content:center" onclick="handleLogin()">Sign In &#8594;</button>
+      <p style="font-size:12px;color:var(--ink4);text-align:center;margin-top:16px">Don't have an account? <a style="color:var(--amber);cursor:pointer" onclick="nav('signup')">Start free</a></p>
+    </div>
+  </div>
+  <div id="login-footer-target"></div>
+</div>
+
+<div class="page" id="page-signup">
+  <div style="min-height:calc(100vh - 98px);display:flex;align-items:center;justify-content:center;background:var(--cream2)">
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:40px;width:100%;max-width:440px;box-shadow:var(--shadow2)">
+      <h2 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:6px">Start scoring for free</h2>
+      <p style="font-size:13px;color:var(--ink4);margin-bottom:28px;font-weight:300">20 free ARS scores per month. No credit card required.</p>
+      <div class="form-row" style="margin-bottom:0"><div class="form-group"><label>First Name</label><input class="form-control" type="text" placeholder="James"></div><div class="form-group"><label>Last Name</label><input class="form-control" type="text" placeholder="Rutherford"></div></div>
+      <div class="form-group"><label>Work Email</label><input class="form-control" type="email" placeholder="james@apexeta.com"></div>
+      <div class="form-group"><label>Password</label><input class="form-control" type="password" placeholder="At least 8 characters"></div>
+      <button class="btn btn-amber" style="width:100%;justify-content:center" onclick="handleSignup()">Create Free Account &#8594;</button>
+      <p style="font-size:11px;color:var(--ink4);text-align:center;margin-top:12px">By creating an account you agree to our <a style="color:var(--amber);cursor:pointer">Terms</a> and <a style="color:var(--amber);cursor:pointer">Privacy Policy</a></p>
+      <p style="font-size:12px;color:var(--ink4);text-align:center;margin-top:8px">Already have an account? <a style="color:var(--amber);cursor:pointer" onclick="nav('login')">Sign in</a></p>
+    </div>
+  </div>
+  <div id="signup-footer-target"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     PAGE: INTELLIGENCE BOARD
+     (Second file design — preserved exactly)
+══════════════════════════════════════════════ -->
+<div class="page" id="page-intelligence">
+  <div class="ib-root">
+    <!-- IB HEADER -->
+    <!-- IB file input (hidden, used by sidebar) -->
+    <input type="file" id="file-input" accept=".csv" onchange="handleCSV(event)" style="display:none">
+
+    <!-- IB HERO -->
+    <section class="ib-hero">
+      <div class="ib-eyebrow">Acquisition Readiness Score</div>
+      <h1>Find businesses ready<br>to be <em>acquired</em> — not just<br>businesses that exist.</h1>
+      <p class="ib-hero-sub">Import a CSV from SaaSquatch and get every company scored across five PE acquisition dimensions in seconds. Stop researching. Start acquiring.</p>
+      <div class="ib-stats-strip">
+        <div class="ib-stat-item"><div class="ib-stat-label">Total Targets</div><div class="ib-stat-val" id="stat-total">—</div></div>
+        <div class="ib-stat-item"><div class="ib-stat-label">Tier S / A</div><div class="ib-stat-val gold" id="stat-sa">—</div><div class="ib-stat-sub" id="stat-sa-pct"></div></div>
+        <div class="ib-stat-item"><div class="ib-stat-label">Avg ARS</div><div class="ib-stat-val" id="stat-avg">—</div></div>
+        <div class="ib-stat-item"><div class="ib-stat-label">AI Scored</div><div class="ib-stat-val" id="stat-ai">—</div></div>
+        <div class="ib-stat-item"><div class="ib-stat-label">Exit Signals</div><div class="ib-stat-val" id="stat-exit">—</div></div>
+      </div>
+    </section>
+
+    <!-- IB BREADCRUMB -->
+    <div class="ib-breadcrumb">
+      <a onclick="nav('home')" style="cursor:pointer;color:#9a9a8e">ARS Engine</a><span class="ib-breadcrumb-sep"> › </span>
+      <span>Deal Sourcing</span><span class="ib-breadcrumb-sep"> › </span>
+      <strong>Intelligence Board</strong>
+    </div>
+
+    <!-- IB LAYOUT -->
+    <div class="ib-layout">
+      <!-- SIDEBAR -->
+      <aside class="ib-sidebar">
+        <div class="ib-sb-section">
+          <div class="ib-sb-label">Import Data</div>
+          <label for="file-input">
+            <div class="ib-drop-zone" id="drop-zone">
+              <div class="ib-drop-icon">⬆</div>
+              <p><strong>Drop a CSV here</strong> or click to browse.<br>SaaSquatch, Apollo, Hunter.io all work.</p>
+            </div>
+          </label>
+        </div>
+        <div class="ib-sb-section">
+          <div class="ib-sb-label">API Config</div>
+          <div class="ib-api-cfg">
+            <label>Backend API URL</label>
+            <input type="text" id="api-url-input" placeholder="http://localhost:8000" value="http://localhost:8000" onchange="setApiUrl(this.value)">
+            <div class="ib-api-cfg-status" id="api-cfg-status">● not connected</div>
+          </div>
+        </div>
+        <div class="ib-sb-section">
+          <div class="ib-sb-label">Filter by Tier</div>
+          <div class="ib-tier-list">
+            <button class="ib-tier-btn active" data-tier="all" onclick="setTierFilter('all',this)"><span class="ib-tier-dot" style="background:#9a9a8e"></span>All tiers<span class="ib-tier-ct" id="ct-all">0</span></button>
+            <button class="ib-tier-btn" data-tier="S" onclick="setTierFilter('S',this)"><span class="ib-tier-dot ib-td-S"></span>S — Best fit<span class="ib-tier-ct" id="ct-S">0</span></button>
+            <button class="ib-tier-btn" data-tier="A" onclick="setTierFilter('A',this)"><span class="ib-tier-dot ib-td-A"></span>A — Strong fit<span class="ib-tier-ct" id="ct-A">0</span></button>
+            <button class="ib-tier-btn" data-tier="B" onclick="setTierFilter('B',this)"><span class="ib-tier-dot ib-td-B"></span>B — Moderate fit<span class="ib-tier-ct" id="ct-B">0</span></button>
+            <button class="ib-tier-btn" data-tier="C" onclick="setTierFilter('C',this)"><span class="ib-tier-dot ib-td-C"></span>C — Low priority<span class="ib-tier-ct" id="ct-C">0</span></button>
+          </div>
+        </div>
+        <div class="ib-sb-section">
+          <div class="ib-sb-label">Min Score</div>
+          <div class="ib-ctrl">
+            <div class="ib-range-row">
+              <input type="range" min="0" max="100" value="0" id="score-filter" oninput="updateScoreFilter(this.value)">
+              <span class="ib-range-val" id="score-filter-val">0</span>
+            </div>
+          </div>
+        </div>
+        <div class="ib-sb-section">
+          <div class="ib-sb-label">Sort by</div>
+          <div class="ib-ctrl">
+            <select id="sort-select" onchange="applyFilters()">
+              <option value="score">Composite score</option>
+              <option value="icp">ICP fit</option>
+              <option value="revenue">Revenue signal</option>
+              <option value="company">Company name</option>
+            </select>
+          </div>
+        </div>
+        <div class="ib-sb-section">
+          <div class="ib-sb-label">Industry</div>
+          <div class="ib-ctrl">
+            <select id="industry-filter" onchange="applyFilters()">
+              <option value="all">All industries</option>
+            </select>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="ib-content">
+        <!-- EMPTY STATE -->
+        <div id="empty-state">
+          <div class="ib-empty">
+            <div class="ib-empty-icon">⚡</div>
+            <h3>Ready to score your pipeline</h3>
+            <p>Import a CSV from SaaSquatch or click "Load sample data" to see the AI scoring engine in action. Each lead gets an ICP score, revenue signal, and outreach email.</p>
+            <button class="ib-btn ib-btn-gold" onclick="loadSampleData()">Load 20 sample leads →</button>
+          </div>
+        </div>
+
+        <!-- TABLE SECTION -->
+        <div id="table-section" style="display:none">
+          <div class="ib-content-top">
+            <div class="ib-content-title">Acquisition Intelligence Board</div>
+            <div class="ib-actions">
+              <button class="ib-btn ib-btn-outline" onclick="exportCSV()">↓ Export with scores</button>
+              <button class="ib-btn ib-btn-gold" id="score-all-btn" onclick="scoreAllLeads()">✦ AI Score All Leads</button>
+            </div>
+          </div>
+
+          <!-- PROGRESS -->
+          <div class="ib-progress-box" id="scoring-progress">
+            <div class="ib-progress-top">
+              <div class="ib-spinner"></div>
+              <span class="ib-progress-status" id="scoring-status">Analyzing leads with Claude AI...</span>
+            </div>
+            <div class="ib-progress-track"><div class="ib-progress-fill" id="scoring-bar" style="width:0%"></div></div>
+          </div>
+
+          <!-- TABLE -->
+          <div class="ib-tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Company</th>
+                  <th onclick="setSortAndApply('score')">Score ↕</th>
+                  <th>Tier</th>
+                  <th>Signals</th>
+                  <th>Revenue Est.</th>
+                  <th>Contact</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="lead-table-body"></tbody>
+            </table>
+            <div class="ib-no-results" id="no-results" style="display:none">No leads match the current filters.</div>
+            <div class="ib-pag" id="pagination"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- IB MODAL -->
+    <div class="ib-modal-bg" id="modal-bg" onclick="closeModalOnBackdrop(event)">
+      <div class="ib-modal" id="lead-modal">
+        <div class="ib-modal-hdr">
+          <div class="ib-modal-co">
+            <div class="ib-modal-av" id="modal-avatar"></div>
+            <div>
+              <div class="ib-modal-name" id="modal-company-name"></div>
+              <div class="ib-modal-meta" id="modal-meta"></div>
+              <div class="ib-modal-tier-badge" id="modal-tier-badge"></div>
+            </div>
+          </div>
+          <button class="ib-close-btn" onclick="closeModal()">✕</button>
+        </div>
+        <div class="ib-modal-body">
+          <!-- SCORE STRIP -->
+          <div class="ib-score-strip">
+            <div class="ib-score-cell"><div class="ib-score-cell-label">Composite</div><div class="ib-score-cell-val ib-scv-ars" id="modal-score-composite">—</div></div>
+            <div class="ib-score-cell"><div class="ib-score-cell-label">ICP Fit</div><div class="ib-score-cell-val ib-scv-fin" id="modal-score-icp">—</div></div>
+            <div class="ib-score-cell"><div class="ib-score-cell-label">Revenue</div><div class="ib-score-cell-val ib-scv-ops" id="modal-score-revenue">—</div></div>
+            <div class="ib-score-cell"><div class="ib-score-cell-label">Exit</div><div class="ib-score-cell-val ib-scv-exit" id="modal-score-exit">—</div></div>
+            <div class="ib-score-cell"><div class="ib-score-cell-label">Moat</div><div class="ib-score-cell-val ib-scv-moat" id="modal-score-moat">—</div></div>
+          </div>
+
+          <!-- AI ANALYSIS -->
+          <div class="ib-m-section">AI Acquisition Analysis</div>
+          <div class="ib-ai-box" id="modal-ai-analysis">
+            <div class="ib-ai-box-hdr"><div class="ib-ai-dot-pulse"></div><div class="ib-ai-box-label">Claude AI — Acquisition Intelligence</div></div>
+            <div class="ib-ai-text" id="modal-ai-text">Click "Score All Leads" to generate AI analysis for this company.</div>
+          </div>
+
+          <!-- RISK -->
+          <div class="ib-risk-box" id="modal-risk-box">
+            <div class="ib-risk-title">⚠ Risk Flags</div>
+            <div class="ib-risk-text" id="modal-risk-text"></div>
+          </div>
+
+          <!-- EMAIL -->
+          <div class="ib-m-section">Outreach Email Draft</div>
+          <div class="ib-email-panel" id="modal-email-box">
+            <div class="ib-email-panel-hdr">
+              <span class="ib-email-panel-label">AI-drafted acquisition outreach</span>
+              <button class="ib-copy-btn" onclick="copyEmail()">Copy</button>
+            </div>
+            <div class="ib-email-body" id="modal-email-text">Email will appear after AI scoring.</div>
+          </div>
+
+          <!-- DETAILS -->
+          <div class="ib-m-section">Lead Details</div>
+          <div id="modal-details"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IB TOAST -->
+    <div class="toast" id="ib-toast"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     GLOBAL TOAST
+══════════════════════════════════════════════ -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════ -->
+<script>
+  function handleLogin() {
+  const email = document.querySelector('#page-login input[type="email"]').value.trim();
+  const pass = document.querySelector('#page-login input[type="password"]').value.trim();
+  if (!email) { showToast('Please enter your email', 'err'); return; }
+  if (!pass) { showToast('Please enter your password', 'err'); return; }
+  showToast('Signing in...', 'ok');
+  setTimeout(() => nav('intelligence'), 600);
+}
+
+function handleSignup() {
+  const inputs = document.querySelectorAll('#page-signup input');
+  for (const inp of inputs) {
+    if (!inp.value.trim()) {
+      showToast('Please fill in all fields', 'err'); return;
+    }
+  }
+  showToast('Creating account...', 'ok');
+  setTimeout(() => nav('intelligence'), 600);
+}
+
+function handleContact() {
+  const fields = document.querySelectorAll('#page-contact input, #page-contact textarea');
+  for (const f of fields) {
+    if (!f.value.trim()) {
+      showToast('Please fill in all required fields', 'err'); return;
+    }
+  }
+  showToast("Message sent! We'll respond within 1 business day.", 'ok');
+}
+/* ═══════════════════════════════════════
+   ROUTING
+═══════════════════════════════════════ */
+function nav(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.hdr-nav-item').forEach(item => {
+    item.classList.toggle('active', item.getAttribute('data-page') === pageId);
+  });
+  window.scrollTo(0, 0);
+  // inject footer into current page
+  injectFooter(pageId);
+}
+
+function toggleMobileMenu() {
+  const m = document.getElementById('mobile-menu');
+  m.style.display = m.style.display === 'none' ? 'block' : 'none';
+}
+function closeMobileMenu() {
+  document.getElementById('mobile-menu').style.display = 'none';
+}
+
+/* ═══════════════════════════════════════
+   FAQ
+═══════════════════════════════════════ */
+function toggleFaq(el) {
+  el.parentElement.classList.toggle('open');
+}
+
+/* ═══════════════════════════════════════
+   FOOTER BUILDER
+═══════════════════════════════════════ */
+const FOOTER_HTML = `
+<footer style="background:var(--navy);border-top:1px solid var(--wborder);padding:56px 40px 28px">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="display:grid;grid-template-columns:260px repeat(4,1fr);gap:36px;padding-bottom:40px;border-bottom:1px solid var(--wborder)">
+      <div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;color:#fff;margin-bottom:2px">ARS Engine</div>
+        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);font-family:'JetBrains Mono',monospace;margin-bottom:14px">Acquisition Intelligence</div>
+        <p style="font-size:12px;color:rgba(255,255,255,.35);line-height:1.7;margin-bottom:18px;font-weight:300">PE-grade acquisition intelligence. Score, rank, and enrich business targets using 5-dimension ARS analysis and Claude AI.</p>
+        <div style="display:flex;gap:7px">
+          <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="social-btn">in</a>
+          <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-btn">𝕏</a>
+          <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="social-btn">▶</a>
+          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="social-btn">◻</a>
+          <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="social-btn">f</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Product</div>
+        <ul class="footer-links">
+          <li><a onclick="nav('features')">Features</a></li>
+          <li><a onclick="nav('pricing')">Pricing</a></li>
+          <li><a onclick="nav('integrations')">Integrations</a></li>
+          <li><a onclick="nav('intelligence')">Intelligence Board</a></li>
+          <li><a onclick="nav('case-studies')">Case Studies</a></li>
+          <li><a href="sandbox.html">Live Sandbox</a></li>
+          <li><a href="roi-calculator.html">ROI Calculator</a></li>
+          <li><a href="vs-saasquatch.html">vs SaaSquatch</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <ul class="footer-links">
+          <li><a onclick="nav('about')">About</a></li>
+          <li><a onclick="nav('blog')">Blog</a></li>
+          <li><a onclick="nav('enterprise')">Enterprise</a></li>
+          <li><a onclick="nav('contact')">Contact</a></li>
+          <li><a href="mailto:hello@arsengine.com">hello@arsengine.com</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Industries</div>
+        <ul class="footer-links">
+          <li><a href="industries/hvac.html">HVAC Acquisitions</a></li>
+          <li><a href="industries/plumbing.html">Plumbing Acquisitions</a></li>
+          <li><a href="industries/landscaping.html">Landscaping Acquisitions</a></li>
+          <li><a href="industries/roofing.html">Roofing Acquisitions</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Resources</div>
+        <ul class="footer-links">
+          <li><a onclick="nav('faq')">FAQ / Help Center</a></li>
+          <li><a onclick="nav('demo')">Book a Demo</a></li>
+          <li><a onclick="nav('blog')">Blog</a></li>
+          <li><a onclick="nav('contact')">Contact Support</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div style="font-size:11px;color:rgba(255,255,255,.2);font-family:'JetBrains Mono',monospace">© 2025 ARS Engine, Inc. All rights reserved.</div>
+      <div style="display:flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.2)">
+        <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block"></span>All Systems Operational
+      </div>
+    </div>
+  </div>
+</footer>`;
+
+const FOOTER_TARGETS = ['home','features','pricing','blog','integrations','about','faq','contact','demo','case-studies','enterprise','login','signup'];
+
+function injectFooter(pageId) {
+  const targetId = pageId + '-footer-target';
+  const el = document.getElementById(targetId);
+  if (el && !el.innerHTML) el.innerHTML = FOOTER_HTML;
+}
+
+// inject footer on home on load
+document.addEventListener('DOMContentLoaded', () => {
+  injectFooter('home');
+});
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+/* ═══════════════════════════════════════
+   API HEALTH CHECK
+═══════════════════════════════════════ */
+let API_URL = localStorage.getItem('ars_api_url') || 'http://localhost:8000';
+function setApiUrl(url) {
+  API_URL = url.replace(/\/$/, '');
+  localStorage.setItem('ars_api_url', API_URL);
+  checkHealth();
+}
+async function checkHealth() {
+  const dot = document.getElementById('api-dot');
+  const label = document.getElementById('api-status-label');
+  const cfg = document.getElementById('api-cfg-status');
+  try {
+    const r = await fetch(`${API_URL}/health`, { signal: AbortSignal.timeout(3000) });
+    if (r.ok) {
+      const d = await r.json();
+      dot?.classList.add('ok');
+      if (label) label.textContent = d.anthropic === 'configured' ? 'AI Ready' : 'API · No AI Key';
+      if (cfg) { cfg.className = 'ib-api-cfg-status ok'; cfg.textContent = `✓ Connected · ${d.status}`; }
+    } else throw new Error();
+  } catch {
+    dot?.classList.remove('ok');
+    if (label) label.textContent = 'API Offline';
+    if (cfg) { cfg.className = 'ib-api-cfg-status err'; cfg.textContent = '✗ Backend unreachable — demo mode'; }
+  }
+}
+checkHealth();
+setInterval(checkHealth, 30000);
+
+/* ═══════════════════════════════════════
+   INTELLIGENCE BOARD ENGINE
+   (From second file — full implementation)
+═══════════════════════════════════════ */
+const SAMPLES = [
+  {company:"NexGen Logistics",industry:"Logistics & Supply Chain",contact_name:"Sarah Chen",contact_title:"VP Operations",email:"s.chen@nexgenlogistics.com",employees:"250-500",revenue_est:"$12M-$18M",website:"nexgenlogistics.com",location:"Chicago, IL",signals:["hiring","growth"],description:"Regional 3PL provider scaling aggressively, recently announced 3 new warehouse openings. Founded in 2003 by owner now aged 61."},
+  {company:"Clarity Health AI",industry:"HealthTech",contact_name:"Dr. Marcus Webb",contact_title:"CEO",email:"m.webb@clarityhealth.ai",employees:"50-100",revenue_est:"$3M-$6M",website:"clarityhealth.ai",location:"Austin, TX",signals:["funding","hiring","tech"],description:"Series A healthtech startup building AI-powered clinical decision support tools. Strong product-market fit, but founder-dependent."},
+  {company:"Titan Manufacturing",industry:"Industrial Manufacturing",contact_name:"Pete Russo",contact_title:"COO",email:"p.russo@titanmfg.com",employees:"500-1000",revenue_est:"$40M-$60M",website:"titanmfg.com",location:"Detroit, MI",signals:["pain","growth"],description:"Legacy manufacturer undergoing digital transformation, struggling with outdated ERP. Founder posted COO role twice this year — possible succession planning signal."},
+  {company:"Bloom Retail Group",industry:"Retail",contact_name:"Jessica Park",contact_title:"Head of Digital",email:"j.park@bloomretail.com",employees:"100-250",revenue_est:"$8M-$14M",website:"bloomretail.com",location:"New York, NY",signals:["tech","growth"],description:"Omnichannel retail brand with 40 stores expanding online presence."},
+  {company:"CloudBridge IT",industry:"IT Services",contact_name:"Raj Patel",contact_title:"Director of Sales",email:"r.patel@cloudbridgeit.com",employees:"50-100",revenue_est:"$5M-$9M",website:"cloudbridgeit.com",location:"Dallas, TX",signals:["hiring"],description:"MSP focused on SMB cloud migration, growing client base rapidly. Founder has been running the company for 18 years."},
+  {company:"Verdant AgTech",industry:"AgTech",contact_name:"Emily Torres",contact_title:"Founder & CEO",email:"e.torres@verdantagtech.com",employees:"20-50",revenue_est:"$1M-$3M",website:"verdantagtech.com",location:"Fresno, CA",signals:["funding","tech"],description:"Pre-Series A precision agriculture startup with strong customer traction in the Central Valley."},
+  {company:"Harbor Financial Advisors",industry:"Financial Services",contact_name:"Tom Garvey",contact_title:"Managing Partner",email:"t.garvey@harborfa.com",employees:"10-20",revenue_est:"$2M-$4M",website:"harborfa.com",location:"Boston, MA",signals:["pain"],description:"RIA firm with outdated CRM and manual compliance workflows. Managing Partner is 58 and mentioned retirement timeline in a recent industry panel."},
+  {company:"Skyrise Construction",industry:"Construction",contact_name:"Dan Mueller",contact_title:"Project Director",email:"d.mueller@skyriseconstruction.com",employees:"100-250",revenue_est:"$25M-$40M",website:"skyriseconstruction.com",location:"Denver, CO",signals:["growth","hiring"],description:"Commercial GC with growing pipeline of multi-family residential projects."},
+  {company:"Pulse Media Network",industry:"Media & Publishing",contact_name:"Kira Brooks",contact_title:"CTO",email:"k.brooks@pulsemedia.net",employees:"50-100",revenue_est:"$4M-$8M",website:"pulsemedia.net",location:"Los Angeles, CA",signals:["tech","pain"],description:"Digital media company losing ad revenue and pivoting to subscription model. Founder-run for 12 years, showing operational strain."},
+  {company:"CoreTech Solutions",industry:"IT Services",contact_name:"Alan Nguyen",contact_title:"VP Sales",email:"a.nguyen@coretechsolutions.com",employees:"100-250",revenue_est:"$10M-$16M",website:"coretechsolutions.com",location:"Seattle, WA",signals:["growth","hiring"],description:"IT staffing and consulting firm expanding into managed services."},
+  {company:"BrightPath Education",industry:"EdTech",contact_name:"Sonia Mehta",contact_title:"CEO",email:"s.mehta@brightpathedu.com",employees:"20-50",revenue_est:"$1M-$3M",website:"brightpathedu.com",location:"Boston, MA",signals:["funding","tech"],description:"K-12 adaptive learning platform with recent DOE grant and 200 school districts evaluating."},
+  {company:"Ironclad Legal Software",industry:"LegalTech",contact_name:"Chris Donovan",contact_title:"Head of Growth",email:"c.donovan@ironcladlegal.io",employees:"50-100",revenue_est:"$6M-$10M",website:"ironcladlegal.io",location:"Chicago, IL",signals:["growth","hiring","tech"],description:"Contract lifecycle management SaaS scaling from SMB to mid-market law firms."},
+  {company:"Summit Hospitality Group",industry:"Hospitality",contact_name:"Maria Fontaine",contact_title:"Director of Revenue",email:"m.fontaine@summithospitality.com",employees:"250-500",revenue_est:"$18M-$28M",website:"summithospitality.com",location:"Nashville, TN",signals:["pain"],description:"Regional hotel management company with fragmented tech stack across 14 properties."},
+  {company:"Redwood Consulting",industry:"Professional Services",contact_name:"Ben Walsh",contact_title:"Principal",email:"b.walsh@redwoodconsulting.com",employees:"10-20",revenue_est:"$1M-$2M",website:"redwoodconsulting.com",location:"Portland, OR",signals:[],description:"Small strategy consulting boutique. Limited growth signals currently."},
+  {company:"Arctic Energy Systems",industry:"Clean Energy",contact_name:"Lena Okafor",contact_title:"CTO",email:"l.okafor@arcticenergy.com",employees:"100-250",revenue_est:"$15M-$22M",website:"arcticenergy.com",location:"Minneapolis, MN",signals:["funding","growth","hiring"],description:"Series B clean energy company deploying grid-scale battery storage systems."},
+  {company:"Vantage Pharma",industry:"Life Sciences",contact_name:"Dr. Amit Shah",contact_title:"VP Operations",email:"a.shah@vantagepharma.com",employees:"500-1000",revenue_est:"$80M-$120M",website:"vantagepharma.com",location:"San Diego, CA",signals:["growth","hiring"],description:"Mid-market pharma company expanding manufacturing capacity for biosimilars."},
+  {company:"TrueNorth Fintech",industry:"FinTech",contact_name:"Nick Alvarez",contact_title:"Head of BD",email:"n.alvarez@truenorthfintech.com",employees:"50-100",revenue_est:"$7M-$12M",website:"truenorthfintech.com",location:"Miami, FL",signals:["funding","tech","hiring"],description:"Series A payments infrastructure startup processing $500M+ annually."},
+  {company:"Orion Staffing",industry:"Human Resources",contact_name:"Lisa Tang",contact_title:"President",email:"l.tang@orionstaffing.com",employees:"50-100",revenue_est:"$12M-$20M",website:"orionstaffing.com",location:"Phoenix, AZ",signals:["growth"],description:"Regional staffing firm growing ATS and CRM spending."},
+  {company:"Pacific Rim Foods",industry:"Food & Beverage",contact_name:"James Kim",contact_title:"CEO",email:"j.kim@pacificrimfoods.com",employees:"100-250",revenue_est:"$20M-$32M",website:"pacificrimfoods.com",location:"San Francisco, CA",signals:["pain","growth"],description:"Specialty food distributor dealing with supply chain visibility challenges."},
+  {company:"Quorum Analytics",industry:"Data & Analytics",contact_name:"Priya Subramanian",contact_title:"Founder",email:"p.subramanian@quorumanalytics.io",employees:"20-50",revenue_est:"$2M-$5M",website:"quorumanalytics.io",location:"New York, NY",signals:["tech","funding"],description:"B2B data analytics startup with strong product-market fit in financial compliance."}
+];
+
+const AV_COLORS=[
+  ['#f5e9c0','#b57208'],['#d1f0e0','#0f5132'],['#ddeaff','#1040a0'],
+  ['#f3e8ff','#5b21b6'],['#fef0d0','#7a4500'],['#fde8ea','#8b1520'],
+  ['#e8e4d8','#2d2d28'],['#d0f2ec','#0a8a72']
+];
+function avColors(name){const i=name.charCodeAt(0)%AV_COLORS.length;return AV_COLORS[i]}
+function initials(name){return name.split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase()}
+
+/* ── SCORING ── */
+function computeScore(lead){
+  const highICP=['HealthTech','FinTech','Data & Analytics','LegalTech','EdTech','AgTech','Clean Energy','IT Services'];
+  const midICP=['Logistics & Supply Chain','Industrial Manufacturing','Professional Services','Life Sciences'];
+  let icp=50;
+  if(highICP.includes(lead.industry))icp=75+Math.floor(Math.random()*20);
+  else if(midICP.includes(lead.industry))icp=55+Math.floor(Math.random()*20);
+  else icp=35+Math.floor(Math.random()*20);
+  const hasHighRev=lead.revenue_est&&(lead.revenue_est.includes('$40M')||lead.revenue_est.includes('$80M')||lead.revenue_est.includes('$120M')||lead.revenue_est.includes('$60M'));
+  const hasMidRev=lead.revenue_est&&(lead.revenue_est.includes('$10M')||lead.revenue_est.includes('$12M')||lead.revenue_est.includes('$15M')||lead.revenue_est.includes('$18M'));
+  let revenue=50;
+  if(hasHighRev)revenue=75+Math.floor(Math.random()*20);
+  else if(hasMidRev)revenue=58+Math.floor(Math.random()*20);
+  else revenue=35+Math.floor(Math.random()*25);
+  const sigCount=(lead.signals||[]).length;
+  const engagement=Math.min(95,35+sigCount*15+Math.floor(Math.random()*10));
+  const composite=Math.round((icp*0.40+revenue*0.30+engagement*0.30));
+  const exit=Math.min(95,engagement+Math.floor(Math.random()*15));
+  const moat=Math.min(95,35+Math.floor(Math.random()*40));
+  return{icp:Math.min(99,icp),revenue:Math.min(99,revenue),engagement:Math.min(99,engagement),composite:Math.min(99,composite),exit:Math.min(99,exit),moat:Math.min(99,moat)};
+}
+function getTier(s){return s>=75?'S':s>=58?'A':s>=42?'B':'C'}
+
+/* ── STATE ── */
+let allLeads=[],filteredLeads=[],currentTierFilter='all',currentMinScore=0,currentPage=1;
+const PAGE_SIZE=10;
+let activeLead=null;
+
+function loadSampleData(){
+  allLeads=SAMPLES.map((l,i)=>{
+    const scores=computeScore(l);
+    return{...l,id:i,scores,tier:getTier(scores.composite),ai_analysis:null,risk_flags:null,email_draft:null};
+  });
+  allLeads.sort((a,b)=>b.scores.composite-a.scores.composite);
+  initIndustryFilter();updateStats();applyFilters();
+  document.getElementById('empty-state').style.display='none';
+  document.getElementById('table-section').style.display='block';
+  ibToast('20 sample leads loaded');
+}
+
+function initIndustryFilter(){
+  const sel=document.getElementById('industry-filter');
+  const inds=[...new Set(allLeads.map(l=>l.industry))].sort();
+  sel.innerHTML='<option value="all">All industries</option>'+inds.map(i=>`<option value="${i}">${i}</option>`).join('');
+}
+
+function updateStats(){
+  const total=allLeads.length;
+  const sa=allLeads.filter(l=>l.tier==='S'||l.tier==='A').length;
+  const avg=total?Math.round(allLeads.reduce((s,l)=>s+l.scores.composite,0)/total):0;
+  const aiScored=allLeads.filter(l=>l.ai_analysis).length;
+  const exitSig=allLeads.filter(l=>l.scores.exit>=65).length;
+  setEl('stat-total',total||'—');setEl('stat-sa',sa||'—');
+  setEl('stat-sa-pct',total?`${Math.round(sa/total*100)}% of pipeline`:'');
+  setEl('stat-avg',avg||'—');setEl('stat-ai',aiScored||'—');setEl('stat-exit',exitSig||'—');
+  ['S','A','B','C','all'].forEach(t=>{
+    const el=document.getElementById('ct-'+t);
+    if(el)el.textContent=t==='all'?total:allLeads.filter(l=>l.tier===t).length;
+  });
+}
+function setEl(id,val){const el=document.getElementById(id);if(el)el.textContent=val}
+
+function setTierFilter(t,btn){
+  currentTierFilter=t;
+  document.querySelectorAll('.ib-tier-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');currentPage=1;applyFilters();
+}
+function updateScoreFilter(v){
+  currentMinScore=parseInt(v);
+  document.getElementById('score-filter-val').textContent=v;
+  currentPage=1;applyFilters();
+}
+function setSortAndApply(f){document.getElementById('sort-select').value=f;applyFilters()}
+
+function applyFilters(){
+  const sort=document.getElementById('sort-select').value;
+  const ind=document.getElementById('industry-filter').value;
+  filteredLeads=allLeads.filter(l=>{
+    if(currentTierFilter!=='all'&&l.tier!==currentTierFilter)return false;
+    if(l.scores.composite<currentMinScore)return false;
+    if(ind!=='all'&&l.industry!==ind)return false;
+    return true;
+  });
+  filteredLeads.sort((a,b)=>{
+    if(sort==='score')return b.scores.composite-a.scores.composite;
+    if(sort==='icp')return b.scores.icp-a.scores.icp;
+    if(sort==='revenue')return b.scores.revenue-a.scores.revenue;
+    if(sort==='company')return a.company.localeCompare(b.company);
+    return 0;
+  });
+  renderTable();
+}
+
+function renderTable(){
+  const tbody=document.getElementById('lead-table-body');
+  const nr=document.getElementById('no-results');
+  const start=(currentPage-1)*PAGE_SIZE;
+  const pageLeads=filteredLeads.slice(start,start+PAGE_SIZE);
+  if(!filteredLeads.length){tbody.innerHTML='';nr.style.display='block';}
+  else{
+    nr.style.display='none';
+    tbody.innerHTML=pageLeads.map((lead,i)=>{
+      const gi=start+i+1;
+      const [bg,fg]=avColors(lead.company);
+      const sc=lead.scores.composite;
+      const scoreColor=sc>=75?'#c9910a':sc>=58?'#0f5132':sc>=42?'#1040a0':'#9a9a8e';
+      const sigHtml=(lead.signals||[]).map(s=>`<span class="ib-sig ib-sig-${s}">${s}</span>`).join('')||'<span style="color:#9a9a8e;font-size:10px">—</span>';
+      const aiDot=lead.ai_analysis?`<span class="ib-ai-ind"></span>`:'';
+      return`<tr onclick="openLead(${lead.id})">
+        <td style="color:#9a9a8e;font-size:11px">${gi}</td>
+        <td><div class="ib-co-cell"><div class="ib-co-av" style="background:${bg};color:${fg}">${initials(lead.company)}</div><div><div class="ib-co-name">${aiDot}${lead.company}</div><div class="ib-co-ind">${lead.industry}</div></div></div></td>
+        <td><div class="ib-sbar-wrap"><div class="ib-sbar-track"><div class="ib-sbar-fill" style="width:${sc}%;background:${scoreColor}"></div></div><span class="ib-sbar-num">${sc}</span></div></td>
+        <td><span class="ib-tbadge ib-tbadge-${lead.tier}">${lead.tier}</span></td>
+        <td><div class="ib-sigs">${sigHtml}</div></td>
+        <td style="font-size:11px;color:#6b6b62">${lead.revenue_est||'—'}</td>
+        <td><div style="font-size:13px;font-weight:500">${lead.contact_name}</div><div style="font-size:10px;color:#9a9a8e">${lead.contact_title}</div></td>
+        <td><button class="ib-btn ib-btn-outline" onclick="event.stopPropagation();openLead(${lead.id})" style="font-size:11px;padding:4px 10px;">View →</button></td>
+      </tr>`;
+    }).join('');
+  }
+  renderPagination();
+}
+
+function renderPagination(){
+  const total=filteredLeads.length;
+  const pages=Math.ceil(total/PAGE_SIZE);
+  const el=document.getElementById('pagination');
+  if(!total){el.innerHTML='';return;}
+  const s=(currentPage-1)*PAGE_SIZE+1,e=Math.min(currentPage*PAGE_SIZE,total);
+  let btns='';
+  for(let p=1;p<=pages;p++)btns+=`<button class="ib-pag-btn${p===currentPage?' active':''}" onclick="goPage(${p})">${p}</button>`;
+  el.innerHTML=`<span>${s}–${e} of ${total} leads</span><div class="ib-pag-btns">${btns}</div>`;
+}
+function goPage(p){currentPage=p;renderTable()}
+
+/* ── MODAL ── */
+function openLead(id){
+  activeLead=allLeads.find(l=>l.id===id);
+  if(!activeLead)return;
+  const[bg,fg]=avColors(activeLead.company);
+  const av=document.getElementById('modal-avatar');
+  av.style.background=bg;av.style.color=fg;av.style.border=`1px solid ${fg}40`;av.textContent=initials(activeLead.company);
+  document.getElementById('modal-company-name').textContent=activeLead.company;
+  document.getElementById('modal-meta').textContent=`${activeLead.industry} · ${activeLead.location} · ${activeLead.employees} employees`;
+  document.getElementById('modal-tier-badge').textContent=`Tier ${activeLead.tier} — ${activeLead.tier==='S'?'Acquire Now':activeLead.tier==='A'?'Strong Fit':activeLead.tier==='B'?'Monitor':'Low Priority'}`;
+  document.getElementById('modal-score-composite').textContent=activeLead.scores.composite;
+  document.getElementById('modal-score-icp').textContent=activeLead.scores.icp;
+  document.getElementById('modal-score-revenue').textContent=activeLead.scores.revenue;
+  document.getElementById('modal-score-exit').textContent=activeLead.scores.exit;
+  document.getElementById('modal-score-moat').textContent=activeLead.scores.moat;
+  const rb=document.getElementById('modal-risk-box');
+  const aib=document.getElementById('modal-ai-analysis');
+  aib.querySelector('.ib-btn')?.remove();
+  if(activeLead.ai_analysis){
+    document.getElementById('modal-ai-text').textContent=activeLead.ai_analysis;
+    if(activeLead.risk_flags){rb.style.display='block';document.getElementById('modal-risk-text').textContent=activeLead.risk_flags;}
+    else rb.style.display='none';
+    document.getElementById('modal-email-text').textContent=activeLead.email_draft||'No email draft available.';
+  }else{
+    document.getElementById('modal-ai-text').textContent='Click "✦ AI Score All Leads" or "Score This Lead" to generate AI analysis.';
+    rb.style.display='none';
+    document.getElementById('modal-email-text').textContent='Email will appear after AI scoring.';
+    const btn=document.createElement('button');
+    btn.className='ib-btn ib-btn-gold';btn.style.marginTop='12px';
+    btn.innerHTML='✦ Score this lead';btn.onclick=()=>scoreSingleLead(activeLead.id);
+    aib.appendChild(btn);
+  }
+  document.getElementById('modal-details').innerHTML=[
+    ['Company',activeLead.company],['Industry',activeLead.industry],['Location',activeLead.location],
+    ['Employees',activeLead.employees],['Revenue Est.',activeLead.revenue_est],
+    ['Contact',`${activeLead.contact_name} — ${activeLead.contact_title}`],
+    ['Email',activeLead.email],['Website',activeLead.website],
+    ['Signals',(activeLead.signals||[]).join(', ')||'None detected'],
+    ['Tier',activeLead.tier],['Composite Score',activeLead.scores.composite+'/100'],
+    ['Exit Score',activeLead.scores.exit+'/100']
+  ].map(([k,v])=>`<div class="ib-detail-row"><span class="ib-detail-key">${k}</span><span class="ib-detail-val">${v}</span></div>`).join('');
+  document.getElementById('modal-bg').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');activeLead=null}
+function closeModalOnBackdrop(e){if(e.target===document.getElementById('modal-bg'))closeModal()}
+function copyEmail(){navigator.clipboard.writeText(document.getElementById('modal-email-text').textContent).then(()=>ibToast('Email copied to clipboard'))}
+
+/* ── AI SCORING ── */
+async function scoreSingleLead(id){
+  const lead=allLeads.find(l=>l.id===id);
+  if(!lead)return;
+  await scoreLeadWithClaude(lead);
+  updateStats();renderTable();
+  if(activeLead&&activeLead.id===id)openLead(id);
+  ibToast('Lead scored successfully');
+}
+
+async function scoreAllLeads(){
+  const btn=document.getElementById('score-all-btn');
+  const prog=document.getElementById('scoring-progress');
+  const bar=document.getElementById('scoring-bar');
+  const status=document.getElementById('scoring-status');
+  btn.disabled=true;btn.innerHTML='<span class="ib-spinner" style="border-top-color:#0a0a08"></span> Scoring...';
+  prog.style.display='block';
+  const toScore=allLeads.filter(l=>!l.ai_analysis);
+  for(let i=0;i<toScore.length;i++){
+    status.textContent=`Analyzing ${toScore[i].company} (${i+1}/${toScore.length})...`;
+    bar.style.width=Math.round((i+1)/toScore.length*100)+'%';
+    await scoreLeadWithClaude(toScore[i]);
+    await new Promise(r=>setTimeout(r,200));
+  }
+  prog.style.display='none';btn.disabled=false;btn.innerHTML='✦ Re-score Leads';
+  renderTable();updateStats();
+  ibToast(`${toScore.length} leads scored with Claude AI`);
+}
+
+async function scoreLeadWithClaude(lead){
+  const prompt=`You are a B2B sales intelligence analyst. Analyze this lead and provide:
+1. A 2-sentence business analysis (why they're a good or poor acquisition fit)
+2. One key buying signal or concern
+3. A concise cold outreach email (subject + 3 short paragraphs, acquisition angle)
+
+Lead: ${lead.company} | ${lead.industry} | ${lead.location} | ${lead.employees} employees | ${lead.revenue_est} revenue | Contact: ${lead.contact_name}, ${lead.contact_title} | Signals: ${(lead.signals||[]).join(', ')||'none'} | ${lead.description}
+
+Format EXACTLY as:
+ANALYSIS: [2-sentence analysis + key signal/concern]
+RISK: [1-sentence risk flag]
+EMAIL_SUBJECT: [subject line]
+EMAIL_BODY: [3 short paragraphs, no greeting line, start directly with first paragraph]`;
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:prompt}]})});
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'';
+    const analysisM=text.match(/ANALYSIS:\s*([\s\S]*?)(?=RISK:|$)/);
+    const riskM=text.match(/RISK:\s*([\s\S]*?)(?=EMAIL_SUBJECT:|$)/);
+    const subjectM=text.match(/EMAIL_SUBJECT:\s*(.+)/);
+    const bodyM=text.match(/EMAIL_BODY:\s*([\s\S]+)/);
+    lead.ai_analysis=analysisM?analysisM[1].trim():text.substring(0,300);
+    lead.risk_flags=riskM?riskM[1].trim():null;
+    const subject=subjectM?subjectM[1].trim():`Acquisition inquiry — ${lead.company}`;
+    const body=bodyM?bodyM[1].trim():'Unable to generate email.';
+    lead.email_draft=`Subject: ${subject}\n\n${body}`;
+  }catch(err){
+    lead.ai_analysis=`[Demo] ${lead.company} is a Tier ${lead.tier} acquisition target in ${lead.industry}. With ${lead.employees} employees and ${lead.revenue_est} revenue, the company shows ${lead.scores.exit>=65?'strong owner exit signals — a potential succession event may be imminent':'moderate acquisition readiness at this stage'}. ${lead.description}`;
+    lead.risk_flags='Verify customer concentration and owner dependency before proceeding to LOI.';
+    lead.email_draft=`Subject: Exploring a potential partnership with ${lead.company}\n\n${lead.company}'s position in the ${lead.industry} space caught our attention. We're an acquisition fund focused specifically on partnering with founder-led businesses in your segment — not to flip them, but to grow them over a multi-year horizon.\n\nOur approach differs from traditional PE. We preserve what makes a business successful while providing the capital and operational support to scale further. Given ${lead.company}'s market position, we believe there could be a compelling fit.\n\nI'd welcome a brief 15-minute call to introduce ourselves. Would any time this week work?\n\nBest,\n[Your name]`;
+  }
+}
+
+/* ── CSV ── */
+function handleCSV(evt){
+  const file=evt.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const lines=e.target.result.split('\n').filter(l=>l.trim());
+      if(lines.length<2){ibToast('CSV appears empty');return;}
+      const headers=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/[\s"]/g,'_'));
+      const parsed=lines.slice(1).map((line,idx)=>{
+        const vals=parseCSVLine(line);
+        const obj={};headers.forEach((h,i)=>obj[h]=(vals[i]||'').replace(/^"|"$/g,'').trim());
+        const lead={id:idx,company:obj.company||obj.company_name||obj.name||`Lead ${idx+1}`,industry:obj.industry||obj.vertical||'Unknown',contact_name:obj.contact_name||`${obj.first_name||''} ${obj.last_name||''}`.trim()||'Unknown',contact_title:obj.title||obj.contact_title||obj.job_title||'Unknown',email:obj.email||obj.contact_email||'',employees:obj.employees||obj.employee_count||'—',revenue_est:obj.revenue||obj.revenue_est||obj.annual_revenue||'—',website:obj.website||obj.domain||'',location:obj.location||obj.city||'',signals:[],description:obj.description||obj.about||'',ai_analysis:null,risk_flags:null,email_draft:null};
+        lead.scores=computeScore(lead);lead.tier=getTier(lead.scores.composite);return lead;
+      }).filter(l=>l.company);
+      parsed.sort((a,b)=>b.scores.composite-a.scores.composite);
+      allLeads=parsed;initIndustryFilter();updateStats();applyFilters();
+      document.getElementById('empty-state').style.display='none';
+      document.getElementById('table-section').style.display='block';
+      ibToast(`${parsed.length} targets imported`);
+    }catch(err){ibToast('Error parsing CSV — check format')}
+  };
+  reader.readAsText(file);evt.target.value='';
+}
+function parseCSVLine(line){const r=[];let cur='',inQ=false;for(let i=0;i<line.length;i++){if(line[i]==='"'){inQ=!inQ;}else if(line[i]===','&&!inQ){r.push(cur);cur='';}else{cur+=line[i];}}r.push(cur);return r;}
+
+function exportCSV(){
+  if(!allLeads.length){ibToast('No targets to export');return;}
+  const h=['Company','Industry','Contact','Title','Email','Employees','Revenue','Location','Signals','Composite','ICP','Revenue Score','Exit','Moat','Tier','AI Analysis','Risk Flags'];
+  const rows=filteredLeads.map(l=>[`"${l.company}"`,`"${l.industry}"`,`"${l.contact_name}"`,`"${l.contact_title}"`,`"${l.email}"`,`"${l.employees}"`,`"${l.revenue_est}"`,`"${l.location}"`,`"${(l.signals||[]).join('; ')}"`,l.scores.composite,l.scores.icp,l.scores.revenue,l.scores.exit,l.scores.moat,l.tier,`"${(l.ai_analysis||'').replace(/"/g,"'")}"`,`"${(l.risk_flags||'').replace(/"/g,"'")}"`].join(','));
+  const csv=[h.join(','),...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`ars_scored_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  ibToast('Exported with ARS scores');
+}
+
+function ibToast(msg){
+  const t=document.getElementById('ib-toast');
+  if(!t)return;
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+/* ── DRAG & DROP ── */
+document.addEventListener('dragover',e=>{e.preventDefault();document.getElementById('drop-zone')?.classList.add('drag')});
+document.addEventListener('dragleave',()=>document.getElementById('drop-zone')?.classList.remove('drag'));
+document.addEventListener('drop',e=>{
+  e.preventDefault();document.getElementById('drop-zone')?.classList.remove('drag');
+  const f=e.dataTransfer.files[0];
+  if(f&&f.name.endsWith('.csv')){const mockEvt={target:{files:[f],value:''}};handleCSV(mockEvt);}
+});
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+</script>
+</body>
+</html>
