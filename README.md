@@ -4,8 +4,11 @@
 > Built for ETA searchers and lower-middle-market PE operators who need to know *which* companies are ready to be acquired — not just which ones exist.
 
 ---
+Live Demo
+---
+
 > 🔗 **[Try ARS Engine →](https://aquamarine-valkyrie-50a6ed.netlify.app)**
-> 📹 **[2-Minute Video Walkthrough →](https://loom.com/your-link)**
+> 📹 **[2-Minute Video Walkthrough →]([https://loom.com/your-link](https://www.loom.com/share/541ef5c8772e4b7e9428ab537e73a735))**
 
 ## What It Does
 
@@ -35,13 +38,6 @@ Owner exit signals are weighted highest because in ETA, **seller motivation is t
 | **A** | 60–77 | Good fit — worth a first call this quarter |
 | **B** | 42–59 | Moderate fit — monitor, revisit in 6 months |
 | **C** | 0–41 | Not ready — deprioritize |
-
----
-
-## Live Demo
-
-> 🔗 **[Try ARS Engine →](https://your-render-url.onrender.com)**
-> 📹 **[2-Minute Video Walkthrough →](https://loom.com/your-link)**
 
 ---
 
