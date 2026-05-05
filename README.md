@@ -8,7 +8,7 @@ Live Demo
 ---
 
 > 🔗 **[Try ARS Engine →](https://aquamarine-valkyrie-50a6ed.netlify.app)**
-> 📹 **[2-Minute Video Walkthrough →]([https://loom.com/your-link](https://www.loom.com/share/541ef5c8772e4b7e9428ab537e73a735))**
+> 📹 **[2-Minute Video Walkthrough →](https://www.loom.com/share/541ef5c8772e4b7e9428ab537e73a735)**
 
 ## What It Does
 
