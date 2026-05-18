@@ -1,0 +1,12 @@
+# Tell GitHub Linguist to exclude frontend files from language detection
+# This makes the repo show Python as the primary language
+
+frontend/*.html        linguist-detectable=false
+frontend/*.css         linguist-detectable=false
+frontend/*.js          linguist-detectable=false
+frontend/industries/** linguist-detectable=false
+
+# Also mark them as vendored/documentation so they're fully excluded
+frontend/index.html    linguist-vendored
+frontend/shared.css    linguist-vendored
+frontend/shared.js     linguist-vendored
